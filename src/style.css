@@ -509,10 +509,10 @@ dialog::backdrop { background: rgba(59, 37, 32, 0.58); backdrop-filter: blur(2px
 .package-lid { position: absolute; top: 5px; left: 20px; z-index: 3; width: 144px; height: 29px; border: 3px solid #6f4436; background: #f7dfa0; box-shadow: inset 0 0 0 4px #fff1d6; transform: rotate(-5deg); transform-origin: left bottom; transition: transform 360ms ease; }
 .packaging-interaction.is-packed .package-lid, .packaging-interaction.is-complete .package-lid { transform: translateY(46px) rotate(0); }
 .packaging-interaction.is-packed .package-cupcakes, .packaging-interaction.is-complete .package-cupcakes { opacity: 0; transform: translateY(10px); }
-.package-ribbon { position: absolute; z-index: 4; display: block; background: var(--bow-color); opacity: 0; transition: opacity 180ms ease 120ms; }
+.package-ribbon { position: absolute; z-index: 4; display: block; background: var(--bow-color); opacity: 0; transition: opacity 650ms ease; }
 .ribbon-vertical { bottom: 10px; left: 86px; width: 13px; height: 53px; border-right: 2px solid #6f4436; border-left: 2px solid #6f4436; }
 .ribbon-horizontal { bottom: 27px; left: 25px; width: 134px; height: 12px; border-top: 2px solid #6f4436; border-bottom: 2px solid #6f4436; }
-.package-bow, .package-bow-knot { position: absolute; z-index: 5; display: block; opacity: 0; background: var(--bow-color); transition: opacity 180ms ease, transform 220ms ease; }
+.package-bow, .package-bow-knot { position: absolute; z-index: 5; display: block; opacity: 0; background: var(--bow-color); transition: opacity 700ms ease 100ms, transform 650ms ease; }
 .package-bow { bottom: 50px; width: 60px; height: 21px; border: 3px solid #6f4436; }
 .bow-left { left: 24px; transform: translateX(22px) rotate(8deg); }.bow-right { right: 24px; transform: translateX(-22px) rotate(-8deg); }
 .package-bow-knot { bottom: 49px; left: 78px; width: 28px; height: 25px; border: 3px solid #6f4436; }

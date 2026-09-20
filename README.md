@@ -38,6 +38,7 @@ The project structure was informed by [2d-portfolio-kaboom](https://github.com/J
 | Frosting and character completion | Shine | Faith Mulato |
 | Sprinkles | Salt Shaking | Freesound Community |
 | Packing | Placing Cardboard Box | Oxidvideos |
+| Bow wrapping | Plastic Pop | Freesound Community |
 | Customer delivery | Cartoon Eating Sound Effect | Betoelguapillo |
 | Conveyor belt | Bicycle Wheel FX | Freesound Community |
 | Batter dispenser | Bubble Pop 06 | Universfield |

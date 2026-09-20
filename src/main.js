@@ -14,6 +14,7 @@ import quickLinksImpactUrl from "../audio/universfield-cartoon-impact-02-278820.
 import sprinkleShineUrl from "../audio/faith_mulato-shine-193240.mp3?url";
 import sprinkleShakeUrl from "../audio/freesound_community-salt-shakingwav-14556.mp3?url";
 import packageBoxUrl from "../audio/oxidvideos-placing-cardboard-box-453025.mp3?url";
+import bowWrapUrl from "../audio/freesound_community-plastic-pop-25324.mp3?url";
 import eatingSoundUrl from "../audio/betoelguapillo-cartoon-eating-sound-effect-427528.mp3?url";
 import conveyorSoundUrl from "../audio/freesound_community-bicycle-wheel-fx-39267.mp3?url";
 import "./style.css";
@@ -40,6 +41,7 @@ const soundEffects = {
   shine: { audio: new Audio(sprinkleShineUrl), volume: 1 },
   sprinkles: { audio: new Audio(sprinkleShakeUrl), volume: 1, duration: 3000 },
   packageBox: { audio: new Audio(packageBoxUrl), volume: 1 },
+  bowWrap: { audio: new Audio(bowWrapUrl), volume: 1, duration: 2500 },
   eating: { audio: new Audio(eatingSoundUrl), volume: 1 },
   ovenBell: { audio: new Audio(ovenBellUrl), volume: 1 },
 };
@@ -1385,6 +1387,7 @@ function packageCupcakes() {
   }
 
   if (packagingStage === "packed") {
+    playSoundEffect("bowWrap");
     packagingStage = "complete";
     packagingInteraction.classList.remove("is-packed");
     packagingInteraction.classList.add("is-complete");
