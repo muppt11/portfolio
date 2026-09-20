@@ -215,6 +215,10 @@ dialog::backdrop { background: rgba(59, 37, 32, 0.58); backdrop-filter: blur(2px
 .entry-choice-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-top: 16px; }
 .entry-choice-actions .start-button { margin: 0; padding: 9px 10px; font-size: 10px; text-align: center; }
 .entry-choice-actions .default-button { background: #fff8e8; }
+.sound-notice-paper { width: min(315px, calc(100vw - 28px)); text-align: center; }
+.sound-notice-paper h2 { padding-right: 0; }
+.sound-notice-paper > p:not(.dialog-kicker) { margin: 12px 0 15px; color: #623f36; font-size: 10px; line-height: 1.55; }
+.sound-notice-paper .start-button { margin: 0; padding: 10px 16px; text-align: center; }
 .character-paper { position: relative; width: min(380px, calc(100vw - 28px)); padding: 18px 20px 16px; border: 4px solid #6f4436; background: #fff8e8; box-shadow: 7px 7px 0 rgba(59, 37, 32, 0.32), inset 0 0 0 4px #f2d6ad; }
 .character-paper h2 { margin: 0; font-family: "Fraunces", Georgia, serif; font-size: 24px; line-height: 1; }
 .avatar-preview { --avatar-hair: #623f36; --avatar-skin: #f2c4a8; --avatar-eyes: #623f36; --avatar-shirt: #f2cf83; position: relative; width: 86px; height: 94px; margin: 10px auto; background: #f2d6ad; border: 3px solid #6f4436; box-shadow: 4px 4px 0 #f2cf83; }

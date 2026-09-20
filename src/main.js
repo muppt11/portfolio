@@ -98,6 +98,8 @@ const soundControls = document.querySelector(".sound-controls");
 const soundToggle = document.querySelector("#sound-toggle");
 const volumeDown = document.querySelector("#volume-down");
 const volumeUp = document.querySelector("#volume-up");
+const soundNoticeDialog = document.querySelector("#sound-notice-dialog");
+const soundNoticeContinue = document.querySelector("#sound-notice-continue");
 const startButton = document.querySelector("#start-button");
 const objectiveHelp = document.querySelector("#objective-help");
 const objectiveDialog = document.querySelector("#objective-dialog");
@@ -1855,6 +1857,15 @@ function startGame() {
 }
 
 startButton.addEventListener("click", startGame);
+function closeSoundNotice() {
+  playBackgroundMusic();
+  if (soundNoticeDialog.open) soundNoticeDialog.close();
+}
+soundNoticeContinue.addEventListener("click", closeSoundNotice);
+soundNoticeDialog.addEventListener("click", (event) => {
+  if (event.target === soundNoticeDialog) closeSoundNotice();
+});
+soundNoticeDialog.addEventListener("cancel", () => playBackgroundMusic());
 soundToggle.addEventListener("click", () => {
   if (soundControlsExpanded) toggleBackgroundMusic();
   else setSoundControlsExpanded(true);
@@ -1986,6 +1997,8 @@ backgroundMusic.loop = true;
 backgroundMusic.load();
 updateSoundToggle();
 playBackgroundMusic();
+soundNoticeDialog.showModal();
+window.requestAnimationFrame(() => soundNoticeContinue.focus());
 renderProgress();
 drawBakery();
 highlightStation();

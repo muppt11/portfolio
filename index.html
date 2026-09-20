@@ -15,6 +15,15 @@
       <canvas id="game-canvas"></canvas>
       <audio id="background-music" autoplay loop preload="auto" playsinline></audio>
 
+      <dialog class="objective-dialog sound-notice-dialog" id="sound-notice-dialog" aria-labelledby="sound-notice-title">
+        <div class="objective-paper sound-notice-paper">
+          <p class="dialog-kicker">SOUND ON</p>
+          <h2 id="sound-notice-title">Turn your volume up!</h2>
+          <p>This bakery is best enjoyed with music and sound effects.</p>
+          <button class="start-button" id="sound-notice-continue" type="button">Turn Sound On</button>
+        </div>
+      </dialog>
+
       <section class="welcome-panel" id="welcome-panel" aria-labelledby="welcome-title">
         <button class="panel-stamp" id="open-guide" type="button" aria-label="Open the bakery welcome guide">OPEN</button>
         <p class="eyebrow">A tiny interactive portfolio</p>
