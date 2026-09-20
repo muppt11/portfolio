@@ -141,7 +141,7 @@ h1 span { display: inline-block; margin-top: 5px; color: #ad4d4b; font-family: "
 @keyframes quick-nav-guide { 50% { box-shadow: 0 0 0 4px #f2cf83, 5px 5px 0 rgba(98, 63, 54, .3); } }
 .quick-links-guide { position: absolute; z-index: 10; inset: 0; background: rgba(48, 48, 48, .48); }
 .quick-links-guide[hidden] { display: none; }
-.quick-links-pointer { position: absolute; right: 235px; bottom: 55px; width: 26px; height: 32px; background: url("./pixel-cursor.svg") center / contain no-repeat; filter: drop-shadow(2px 2px 0 rgba(59, 37, 32, .55)); transform: rotate(180deg); animation: quick-links-point 700ms ease-in-out infinite; }
+.quick-links-pointer { position: absolute; right: 235px; bottom: 55px; width: 22px; height: 27px; background: url("./dispenser-cursor.svg") center / contain no-repeat; filter: drop-shadow(2px 2px 0 rgba(59, 37, 32, .45)); transform: rotate(180deg); animation: quick-links-point 700ms ease-in-out infinite; }
 .quick-links-tip { position: absolute; bottom: 66px; left: 14px; width: min(270px, calc(100% - 28px)); padding: 12px 13px 11px; color: #3b2520; border: 3px solid #6f4436; background: #fff8e8; box-shadow: 5px 5px 0 rgba(59, 37, 32, .35); }
 .quick-links-tip > strong { display: block; padding-right: 22px; font-size: 11px; }
 .quick-links-tip p { margin: 7px 0 9px; color: #6f4436; font-size: 8px; line-height: 1.5; }
