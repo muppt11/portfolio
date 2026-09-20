@@ -105,7 +105,7 @@ const recipeGuideDone = document.querySelector("#recipe-guide-done");
 const editCupcakeGuide = document.querySelector("#edit-cupcake-guide");
 const editCupcakeGuideDone = document.querySelector("#edit-cupcake-guide-done");
 const soundNoticeDialog = document.querySelector("#sound-notice-dialog");
-const soundNoticeContinue = document.querySelector("#sound-notice-continue");
+const soundNoticeClose = document.querySelector("#sound-notice-close");
 const startButton = document.querySelector("#start-button");
 const objectiveHelp = document.querySelector("#objective-help");
 const objectiveDialog = document.querySelector("#objective-dialog");
@@ -1928,12 +1928,16 @@ startButton.addEventListener("click", startGame);
 function closeSoundNotice() {
   playBackgroundMusic();
   if (soundNoticeDialog.open) soundNoticeDialog.close();
+  if (gameStarted) window.setTimeout(showSoundControlsGuide, 180);
 }
-soundNoticeContinue.addEventListener("click", closeSoundNotice);
+soundNoticeClose.addEventListener("click", closeSoundNotice);
 soundNoticeDialog.addEventListener("click", (event) => {
   if (event.target === soundNoticeDialog) closeSoundNotice();
 });
-soundNoticeDialog.addEventListener("cancel", () => playBackgroundMusic());
+soundNoticeDialog.addEventListener("cancel", (event) => {
+  event.preventDefault();
+  closeSoundNotice();
+});
 soundToggle.addEventListener("click", () => {
   if (soundControlsExpanded) toggleBackgroundMusic();
   else setSoundControlsExpanded(true);
@@ -1971,7 +1975,11 @@ openGuideEnter.addEventListener("click", () => {
 playGameChoice.addEventListener("click", () => {
   playSoundEffect("gameStart");
   closeDialog(entryChoiceDialog);
-  window.setTimeout(showSoundControlsGuide, 180);
+  gamePaused = true;
+  window.setTimeout(() => {
+    soundNoticeDialog.showModal();
+    soundNoticeClose.focus();
+  }, 180);
 });
 quickLinksChoice.addEventListener("click", () => {
   playSoundEffect("quickLinks");
@@ -2067,8 +2075,6 @@ backgroundMusic.loop = true;
 backgroundMusic.load();
 updateSoundToggle();
 playBackgroundMusic();
-soundNoticeDialog.showModal();
-window.requestAnimationFrame(() => soundNoticeContinue.focus());
 renderProgress();
 drawBakery();
 highlightStation();
