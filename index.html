@@ -157,6 +157,27 @@
           <button class="sound-toggle" id="sound-toggle" type="button" aria-pressed="true" aria-expanded="false" aria-label="Show music controls">♫ 25%</button>
           <button id="volume-up" type="button" aria-label="Increase music volume">+</button>
         </div>
+
+        <aside class="interface-guide sound-controls-guide" id="sound-controls-guide" role="dialog" aria-labelledby="sound-controls-guide-title" hidden>
+          <span class="interface-guide-arrow" aria-hidden="true">&rarr;</span>
+          <strong id="sound-controls-guide-title">Adjust the sound</strong>
+          <p>Click the music button anytime to change the volume or mute the bakery.</p>
+          <button id="sound-guide-next" type="button">Next</button>
+        </aside>
+
+        <aside class="interface-guide recipe-progress-guide" id="recipe-progress-guide" role="dialog" aria-labelledby="recipe-progress-guide-title" hidden>
+          <span class="interface-guide-arrow" aria-hidden="true">&rarr;</span>
+          <strong id="recipe-progress-guide-title">Recipe Progress</strong>
+          <p>This tracks every bakery step. You can close it anytime with the × button.</p>
+          <button id="recipe-guide-done" type="button">Got It</button>
+        </aside>
+
+        <aside class="interface-guide edit-cupcake-guide" id="edit-cupcake-guide" role="dialog" aria-labelledby="edit-cupcake-guide-title" hidden>
+          <span class="interface-guide-arrow" aria-hidden="true">&rarr;</span>
+          <strong id="edit-cupcake-guide-title">Remember!</strong>
+          <p>You can change your cupcake design anytime by clicking Edit Cupcake.</p>
+          <button id="edit-cupcake-guide-done" type="button">Got It</button>
+        </aside>
       </div>
 
       <div class="confetti-layer" id="confetti-layer" aria-hidden="true"></div>

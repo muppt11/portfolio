@@ -98,6 +98,12 @@ const soundControls = document.querySelector(".sound-controls");
 const soundToggle = document.querySelector("#sound-toggle");
 const volumeDown = document.querySelector("#volume-down");
 const volumeUp = document.querySelector("#volume-up");
+const soundControlsGuide = document.querySelector("#sound-controls-guide");
+const soundGuideNext = document.querySelector("#sound-guide-next");
+const recipeProgressGuide = document.querySelector("#recipe-progress-guide");
+const recipeGuideDone = document.querySelector("#recipe-guide-done");
+const editCupcakeGuide = document.querySelector("#edit-cupcake-guide");
+const editCupcakeGuideDone = document.querySelector("#edit-cupcake-guide-done");
 const soundNoticeDialog = document.querySelector("#sound-notice-dialog");
 const soundNoticeContinue = document.querySelector("#sound-notice-continue");
 const startButton = document.querySelector("#start-button");
@@ -262,6 +268,8 @@ let musicVolume = savedMusicVolume !== null && Number.isFinite(parsedMusicVolume
   ? clamp(parsedMusicVolume, 0, 0.5)
   : 0.25;
 let soundControlsExpanded = false;
+let interfaceTourShown = false;
+let editCupcakeGuideShown = false;
 let characterChoice = readCharacter();
 let draftCharacter = { ...characterChoice };
 
@@ -1510,6 +1518,7 @@ function advanceQuest() {
   } else {
     celebrateStep();
     if (completedStepId === "tray") window.setTimeout(showAssemblyCloseGuide, 220);
+    if (completedStepId === "frosting") window.setTimeout(showEditCupcakeGuide, 220);
   }
 }
 
@@ -1522,6 +1531,44 @@ function showAssemblyCloseGuide() {
 
 function hideAssemblyCloseGuide() {
   assemblyCloseGuide.hidden = true;
+}
+
+function hideInterfaceGuides({ resumeGame = true } = {}) {
+  soundControlsGuide.hidden = true;
+  recipeProgressGuide.hidden = true;
+  editCupcakeGuide.hidden = true;
+  soundControls.classList.remove("is-guided");
+  trackerPanel.classList.remove("is-guided");
+  editCupcakeButton.classList.remove("is-guided");
+  if (resumeGame && gameStarted) gamePaused = false;
+}
+
+function showSoundControlsGuide() {
+  if (interfaceTourShown) return;
+  interfaceTourShown = true;
+  gamePaused = true;
+  soundControlsGuide.hidden = false;
+  soundControls.classList.add("is-guided");
+  window.requestAnimationFrame(() => soundGuideNext.focus());
+}
+
+function showRecipeProgressGuide() {
+  soundControlsGuide.hidden = true;
+  soundControls.classList.remove("is-guided");
+  trackerPanel.classList.add("is-visible", "is-open", "is-guided");
+  trackerToggle.classList.remove("is-visible");
+  trackerToggle.setAttribute("aria-expanded", "true");
+  recipeProgressGuide.hidden = false;
+  window.requestAnimationFrame(() => recipeGuideDone.focus());
+}
+
+function showEditCupcakeGuide() {
+  if (editCupcakeGuideShown) return;
+  editCupcakeGuideShown = true;
+  gamePaused = true;
+  editCupcakeGuide.hidden = false;
+  editCupcakeButton.classList.add("is-guided");
+  window.requestAnimationFrame(() => editCupcakeGuideDone.focus());
 }
 
 function skipCurrentStep() {
@@ -1585,6 +1632,7 @@ function showHome() {
   stopBatterMixSound();
   stopConveyorSound();
   stopSprinkleSound();
+  hideInterfaceGuides({ resumeGame: false });
   [recipeDialog, frostingDialog, cupcakeEditorDialog, completionDialog, characterDialog].forEach((dialog) => {
     if (dialog.open) dialog.close();
   });
@@ -1641,6 +1689,7 @@ function setupUiEvents() {
   });
   trackerClose.addEventListener("click", () => {
     hideAssemblyCloseGuide();
+    if (!recipeProgressGuide.hidden) hideInterfaceGuides();
     trackerPanel.classList.remove("is-open", "is-visible");
     trackerToggle.classList.add("is-visible");
     trackerToggle.setAttribute("aria-expanded", "false");
@@ -1655,7 +1704,13 @@ function setupUiEvents() {
       showToast("Close Recipe Progress, then click the Baking station.");
     }
   });
-  editCupcakeButton.addEventListener("click", openCupcakeEditor);
+  editCupcakeButton.addEventListener("click", () => {
+    hideInterfaceGuides();
+    openCupcakeEditor();
+  });
+  soundGuideNext.addEventListener("click", showRecipeProgressGuide);
+  recipeGuideDone.addEventListener("click", hideInterfaceGuides);
+  editCupcakeGuideDone.addEventListener("click", hideInterfaceGuides);
   cupcakeEditorDone.addEventListener("click", () => closeDialog(cupcakeEditorDialog));
   editorDecorationOptions.addEventListener("click", (event) => {
     const button = event.target.closest("button[data-decoration]");
@@ -1869,6 +1924,7 @@ soundNoticeDialog.addEventListener("cancel", () => playBackgroundMusic());
 soundToggle.addEventListener("click", () => {
   if (soundControlsExpanded) toggleBackgroundMusic();
   else setSoundControlsExpanded(true);
+  if (!soundControlsGuide.hidden) showRecipeProgressGuide();
 });
 volumeDown.addEventListener("click", () => adjustBackgroundVolume(-0.1));
 volumeUp.addEventListener("click", () => adjustBackgroundVolume(0.1));
@@ -1902,6 +1958,7 @@ openGuideEnter.addEventListener("click", () => {
 playGameChoice.addEventListener("click", () => {
   playSoundEffect("gameStart");
   closeDialog(entryChoiceDialog);
+  window.setTimeout(showSoundControlsGuide, 180);
 });
 quickLinksChoice.addEventListener("click", () => {
   playSoundEffect("quickLinks");
