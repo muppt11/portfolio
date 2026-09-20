@@ -79,7 +79,8 @@ const BATTER_COLORS = {
 };
 const BOW_COLORS = { berry: "#bd5656", sage: "#87966f", gold: "#d4a84f" };
 const DEFAULT_CHARACTER = { name: "", style: "girl", hair: "brown", skin: "peach", eyes: "brown", shirt: "yellow" };
-const DEFAULT_CUPCAKE_DESIGN = { batterFlavor: "strawberry", frostingFlavor: "strawberry", sprinkles: false, decoration: "none", bowColor: "berry" };
+const DEFAULT_CUPCAKE_SELECTIONS = { batter: false, frosting: false, sprinkles: false, decoration: false, ribbon: false };
+const DEFAULT_CUPCAKE_DESIGN = { batterFlavor: "strawberry", frostingFlavor: "strawberry", sprinkles: false, decoration: "none", bowColor: "berry", selections: DEFAULT_CUPCAKE_SELECTIONS };
 const DECORATION_OPTIONS = new Set(["cherry", "candle", "heart"]);
 const CHARACTER_OPTIONS = {
   style: [["girl", "Girl", "#e98f9d"], ["boy", "Boy", "#7695a8"]],
@@ -317,13 +318,21 @@ function saveCharacterChoice() {
 function readCupcakeDesign() {
   try {
     const savedDesign = JSON.parse(localStorage.getItem(CUPCAKE_KEY) ?? "{}");
+    const legacySelections = {
+      batter: currentStepIndex >= 3,
+      frosting: currentStepIndex >= 5,
+      sprinkles: Boolean(savedDesign.sprinkles),
+      decoration: currentStepIndex >= 6 && savedDesign.decoration !== "none",
+      ribbon: currentStepIndex >= 7,
+    };
     return {
       ...DEFAULT_CUPCAKE_DESIGN,
       ...savedDesign,
       batterFlavor: savedDesign.batterFlavor ?? savedDesign.frostingFlavor ?? DEFAULT_CUPCAKE_DESIGN.batterFlavor,
+      selections: { ...DEFAULT_CUPCAKE_SELECTIONS, ...(savedDesign.selections ?? legacySelections) },
     };
   } catch {
-    return { ...DEFAULT_CUPCAKE_DESIGN };
+    return { ...DEFAULT_CUPCAKE_DESIGN, selections: { ...DEFAULT_CUPCAKE_SELECTIONS } };
   }
 }
 
@@ -1133,7 +1142,7 @@ function updateBatterFlavorUi() {
   const [fill, edge] = BATTER_COLORS[batterFlavor] ?? BATTER_COLORS.strawberry;
   trayInteraction.style.setProperty("--batter-color", fill);
   trayInteraction.style.setProperty("--batter-edge", edge);
-  updateChoiceButtons(batterFlavorButtons, "batterFlavor", batterFlavor);
+  updateChoiceButtons(batterFlavorButtons, "batterFlavor", cupcakeDesign.selections.batter ? batterFlavor : null);
 }
 
 function selectBatterFlavor(flavor) {
@@ -1143,6 +1152,7 @@ function selectBatterFlavor(flavor) {
   frostingFlavor = flavor;
   cupcakeDesign.batterFlavor = flavor;
   cupcakeDesign.frostingFlavor = flavor;
+  cupcakeDesign.selections.batter = true;
   saveCupcakeDesign();
   updateBatterFlavorUi();
   updateCupcakePreviews();
@@ -1264,7 +1274,7 @@ function openFrostingPanel({ review = false, stepIndex = currentStepIndex } = {}
 }
 
 function updateFrostingFlavorButtons() {
-  updateChoiceButtons(frostingFlavorButtons, "frostingFlavor", frostingFlavor);
+  updateChoiceButtons(frostingFlavorButtons, "frostingFlavor", cupcakeDesign.selections.frosting ? frostingFlavor : null);
 }
 
 function updateSprinkleToggle() {
@@ -1297,12 +1307,13 @@ function choiceLabel(value) {
 }
 
 function updateCupcakeEditorSummary() {
-  const summary = [
-    `${choiceLabel(cupcakeDesign.batterFlavor)} batter`,
-    `${choiceLabel(cupcakeDesign.frostingFlavor)} frosting`,
-    choiceLabel(cupcakeDesign.decoration),
-    `${choiceLabel(cupcakeDesign.bowColor)} ribbon`,
-  ].join(" · ");
+  const summaryParts = [];
+  if (cupcakeDesign.selections.batter) summaryParts.push(`${choiceLabel(cupcakeDesign.batterFlavor)} batter`);
+  if (cupcakeDesign.selections.frosting) summaryParts.push(`${choiceLabel(cupcakeDesign.frostingFlavor)} frosting`);
+  if (cupcakeDesign.selections.sprinkles) summaryParts.push(cupcakeDesign.sprinkles ? "Sprinkles" : "No sprinkles");
+  if (cupcakeDesign.selections.decoration) summaryParts.push(choiceLabel(cupcakeDesign.decoration));
+  if (cupcakeDesign.selections.ribbon) summaryParts.push(`${choiceLabel(cupcakeDesign.bowColor)} ribbon`);
+  const summary = summaryParts.join(" · ");
   cupcakeEditorSummary.textContent = summary;
   cupcakeSummaryCompact.textContent = summary;
 }
@@ -1312,7 +1323,7 @@ function openCupcakeEditor() {
   updateBatterFlavorUi();
   updateFrostingFlavorButtons();
   updateBowPicker();
-  updateChoiceButtons(document.querySelectorAll("[data-decoration]"), "decoration", cupcakeDesign.decoration);
+  updateChoiceButtons(document.querySelectorAll("[data-decoration]"), "decoration", cupcakeDesign.selections.decoration ? cupcakeDesign.decoration : null);
   openDialog(cupcakeEditorDialog, cupcakeEditorDone);
 }
 
@@ -1321,6 +1332,7 @@ function selectFrostingFlavor(flavor) {
   const flavorChanged = cupcakeDesign.frostingFlavor !== flavor;
   frostingFlavor = flavor;
   cupcakeDesign.frostingFlavor = flavor;
+  cupcakeDesign.selections.frosting = true;
   saveCupcakeDesign();
   updateCupcakePreviews();
   updateFrostingFlavorButtons();
@@ -1357,6 +1369,7 @@ function toggleSprinkles() {
     cupcakePlaceholder.querySelectorAll(".sprinkle-shower-piece").forEach((piece) => piece.remove());
   }
   cupcakeDesign.sprinkles = sprinklesEnabled;
+  cupcakeDesign.selections.sprinkles = true;
   saveCupcakeDesign();
   updateCupcakePreviews();
   updateSprinkleToggle();
@@ -1365,7 +1378,7 @@ function toggleSprinkles() {
 
 function renderDecorationInteraction() {
   updateCupcakePreviews();
-  updateChoiceButtons(document.querySelectorAll("[data-decoration]"), "decoration", cupcakeDesign.decoration);
+  updateChoiceButtons(document.querySelectorAll("[data-decoration]"), "decoration", cupcakeDesign.selections.decoration ? cupcakeDesign.decoration : null);
   decorationFeedback.textContent = cupcakeDesign.decoration === "none" ? "Pick a decoration to continue." : "Your cupcake is ready for its close-up!";
 }
 
@@ -1373,6 +1386,7 @@ function selectDecoration(decoration, unlockStep = true) {
   if (!DECORATION_OPTIONS.has(decoration)) return;
   const decorationChanged = cupcakeDesign.decoration !== decoration;
   cupcakeDesign.decoration = decoration;
+  cupcakeDesign.selections.decoration = true;
   saveCupcakeDesign();
   renderDecorationInteraction();
   if (decorationChanged && unlockStep) playSoundEffect("whoosh", QUIET_WHOOSH_VOLUME);
@@ -1400,7 +1414,7 @@ function updateBowPicker() {
   const bowColor = BOW_COLORS[cupcakeDesign.bowColor] ?? BOW_COLORS.berry;
   packagingInteraction.style.setProperty("--bow-color", bowColor);
   ribbonPreview.style.setProperty("--bow-color", bowColor);
-  updateChoiceButtons(bowColorButtons, "bowColor", cupcakeDesign.bowColor);
+  updateChoiceButtons(bowColorButtons, "bowColor", cupcakeDesign.selections.ribbon ? cupcakeDesign.bowColor : null);
   updateCupcakeEditorSummary();
 }
 
@@ -1423,6 +1437,7 @@ function selectBowColor(color, showPreview = true) {
   if (!BOW_COLORS[color]) return;
   const colorChanged = cupcakeDesign.bowColor !== color;
   cupcakeDesign.bowColor = color;
+  cupcakeDesign.selections.ribbon = true;
   saveCupcakeDesign();
   updateBowPicker();
   if (showPreview) showRibbonPreview();

@@ -202,6 +202,7 @@ h1 span { display: inline-block; margin-top: 5px; color: #ad4d4b; font-family: "
 #game-shell.is-playing .edit-cupcake-button { display: block; }
 .edit-cupcake-button:hover, .edit-cupcake-button:focus-visible { color: #3b2520; border-color: #bd5656; background: #f4d7d4; }
 .edit-cupcake-button strong, .edit-cupcake-button span { display: block; }
+.edit-cupcake-button span:empty, .cupcake-editor-summary:empty { display: none; }
 .edit-cupcake-button strong { margin-bottom: 3px; font-size: 9px; }
 .edit-cupcake-button span { color: #7d5a4d; font-size: 6px; line-height: 1.35; }
 .tracker-panel { position: relative; display: none; width: 185px; padding: 9px; color: #3b2520; border: 3px solid #6f4436; background: #fff8e8; box-shadow: 5px 5px 0 rgba(98, 63, 54, 0.22); }
