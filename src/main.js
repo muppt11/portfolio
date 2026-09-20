@@ -2064,6 +2064,8 @@ function startGame() {
   playSoundEffect("whoosh", QUIET_WHOOSH_VOLUME);
   if (gameStarted) {
     showGameScreen();
+    renderProgress();
+    highlightStation();
     gamePaused = false;
     showEntryChoice();
     return;
@@ -2167,6 +2169,9 @@ homeButton.addEventListener("click", () => {
 });
 quitGameButton.addEventListener("click", () => {
   playSoundEffect("whoosh", QUIET_WHOOSH_VOLUME);
+  saveProgress();
+  saveCupcakeDesign();
+  saveCharacterChoice();
   hideQuickLinksGuide({ resumeGame: false });
   showHome();
 });
