@@ -34,6 +34,7 @@ The project structure was informed by [2d-portfolio-kaboom](https://github.com/J
 | Placement | Water Splash | Freesound Community |
 | Ingredient and option selection | Simple Whoosh | Dragon Studio |
 | Character customization | Button Press | Dragon Studio |
+| Interface controls | Mouse Click | Matthew Vakaliuk |
 | Game start | 8-Bit Arcade Video Game Start Sound Effect | Freesound Community |
 | Quick Links | Aww | Adhimahadi |
 | Frosting and character completion | Shine | Faith Mulato |

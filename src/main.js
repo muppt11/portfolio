@@ -19,6 +19,7 @@ import eatingSoundUrl from "../audio/betoelguapillo-cartoon-eating-sound-effect-
 import conveyorSoundUrl from "../audio/freesound_community-bicycle-wheel-fx-39267.mp3?url";
 import finishQuestSoundUrl from "../audio/freesound_community-button-pressed-38129.mp3?url";
 import characterOptionSoundUrl from "../audio/dragon-studio-button-press-382713.mp3?url";
+import interfaceClickSoundUrl from "../audio/matthewvakaliuk73627-mouse-click-290204.mp3?url";
 import "./style.css";
 
 const STORAGE_KEY = "tanvis-code-bakery-quest";
@@ -26,6 +27,21 @@ const CHARACTER_KEY = "tanvis-code-bakery-character";
 const CUPCAKE_KEY = "tanvis-code-bakery-cupcake";
 const VOLUME_KEY = "tanvis-code-bakery-volume";
 const QUIET_WHOOSH_VOLUME = 0.8;
+const INTERFACE_CLICK_SELECTOR = [
+  ".dialog-close",
+  ".icon-button",
+  "#quick-links-guide-close",
+  "#finish-quest-reminder-close",
+  "#character-name",
+  "#open-guide",
+  "#objective-help",
+  ".quick-nav button",
+  ".quick-nav a",
+  "#edit-cupcake-button",
+  "#cupcake-editor-dialog button",
+  "#volume-down",
+  "#volume-up",
+].join(",");
 const HOVER_CAPABLE = window.matchMedia("(hover: hover)");
 const REDUCED_MOTION = window.matchMedia("(prefers-reduced-motion: reduce)");
 const MOBILE_LAYOUT = window.matchMedia("(max-width: 700px)");
@@ -48,6 +64,7 @@ const soundEffects = {
   ovenBell: { audio: new Audio(ovenBellUrl), volume: 1 },
   finishQuest: { audio: new Audio(finishQuestSoundUrl), volume: 1 },
   characterOption: { audio: new Audio(characterOptionSoundUrl), volume: 1 },
+  interfaceClick: { audio: new Audio(interfaceClickSoundUrl), volume: 1 },
 };
 const SPRINKLE_COLORS = ["#e98f9d", "#bd5656", "#f0c96b", "#87966f", "#7695a8", "#fff8e8"];
 const FROSTING_COLORS = {
@@ -1110,7 +1127,7 @@ function selectBatterFlavor(flavor) {
   updateBatterFlavorUi();
   updateCupcakePreviews();
   updateFrostingFlavorButtons();
-  if (flavorChanged) playSoundEffect("whoosh", QUIET_WHOOSH_VOLUME);
+  if (flavorChanged && !cupcakeEditorDialog.open) playSoundEffect("whoosh", QUIET_WHOOSH_VOLUME);
 }
 
 function dispenseBatter() {
@@ -1287,7 +1304,7 @@ function selectFrostingFlavor(flavor) {
   saveCupcakeDesign();
   updateCupcakePreviews();
   updateFrostingFlavorButtons();
-  if (flavorChanged) playSoundEffect("whoosh", QUIET_WHOOSH_VOLUME);
+  if (flavorChanged && !cupcakeEditorDialog.open) playSoundEffect("whoosh", QUIET_WHOOSH_VOLUME);
 }
 
 function showSprinkleShower() {
@@ -1338,7 +1355,7 @@ function selectDecoration(decoration, unlockStep = true) {
   cupcakeDesign.decoration = decoration;
   saveCupcakeDesign();
   renderDecorationInteraction();
-  if (decorationChanged) playSoundEffect("whoosh", QUIET_WHOOSH_VOLUME);
+  if (decorationChanged && unlockStep) playSoundEffect("whoosh", QUIET_WHOOSH_VOLUME);
   if (unlockStep) continueButton.disabled = false;
 }
 
@@ -1389,7 +1406,7 @@ function selectBowColor(color, showPreview = true) {
   saveCupcakeDesign();
   updateBowPicker();
   if (showPreview) showRibbonPreview();
-  if (colorChanged) playSoundEffect("whoosh", QUIET_WHOOSH_VOLUME);
+  if (colorChanged && showPreview) playSoundEffect("whoosh", QUIET_WHOOSH_VOLUME);
 }
 
 function packageCupcakes() {
@@ -1951,6 +1968,10 @@ soundToggle.addEventListener("click", () => {
 });
 volumeDown.addEventListener("click", () => adjustBackgroundVolume(-0.1));
 volumeUp.addEventListener("click", () => adjustBackgroundVolume(0.1));
+document.addEventListener("click", (event) => {
+  const clickedControl = event.target.closest?.(INTERFACE_CLICK_SELECTOR);
+  if (clickedControl && !clickedControl.disabled) playSoundEffect("interfaceClick");
+}, true);
 document.addEventListener("click", (event) => {
   if (soundControlsExpanded && !soundControls.contains(event.target)) setSoundControlsExpanded(false);
 });
