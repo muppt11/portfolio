@@ -1961,6 +1961,7 @@ homeButton.addEventListener("click", () => {
   showHome();
 });
 quitGameButton.addEventListener("click", () => {
+  playSoundEffect("whoosh", QUIET_WHOOSH_VOLUME);
   hideQuickLinksGuide({ resumeGame: false });
   showHome();
 });
