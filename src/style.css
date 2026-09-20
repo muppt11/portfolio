@@ -192,13 +192,14 @@ h1 span { display: inline-block; margin-top: 5px; color: #ad4d4b; font-family: "
 .sound-controls-guide .interface-guide-arrow { bottom: 5px; }
 .recipe-progress-guide { top: 0; }
 .recipe-progress-guide .interface-guide-arrow { top: 12px; }
-.edit-cupcake-guide { bottom: 36px; }
+.edit-cupcake-guide { bottom: 50%; }
 .edit-cupcake-guide .interface-guide-arrow { bottom: 12px; }
 @keyframes interface-guide-jump { 0% { opacity: 0; transform: translateY(12px) scale(.92); } 70% { opacity: 1; transform: translateY(-3px) scale(1.02); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
 @keyframes interface-guide-point { 50% { transform: translateX(4px); } }
 .tracker-toggle { display: none; padding: 7px 9px; color: #fff8ea; border: 2px solid #fff8e8; background: #6f4436; box-shadow: 3px 3px 0 #3d2520; cursor: pointer; font-size: 9px; }
 .tracker-toggle.is-visible { display: block; }
-.edit-cupcake-button { display: none; width: 185px; padding: 6px 8px; color: #6f4436; border: 2px solid #6f4436; background: #f4e6d0; box-shadow: 3px 3px 0 rgba(61, 41, 41, .25); cursor: pointer; font-size: 8px; text-align: left; }
+.edit-cupcake-area { position: relative; width: 185px; }
+.edit-cupcake-button { display: none; width: 100%; padding: 6px 8px; color: #6f4436; border: 2px solid #6f4436; background: #f4e6d0; box-shadow: 3px 3px 0 rgba(61, 41, 41, .25); cursor: pointer; font-size: 8px; text-align: left; }
 #game-shell.is-playing .edit-cupcake-button { display: block; }
 .edit-cupcake-button:hover, .edit-cupcake-button:focus-visible { color: #3b2520; border-color: #bd5656; background: #f4d7d4; }
 .edit-cupcake-button strong, .edit-cupcake-button span { display: block; }
@@ -657,7 +658,8 @@ button:focus-visible, a:focus-visible { outline: 3px solid #f2cf83; outline-offs
   .tracker-panel { display: none; width: 160px; max-height: calc(100dvh - 55px); overflow-y: auto; }
   .tracker-panel.is-open { display: block; }
   .tracker-toggle { padding: 5px 7px; font-size: 7px; }
-  .edit-cupcake-button { width: 160px; padding: 5px 7px; }
+  .edit-cupcake-area { width: 160px; }
+  .edit-cupcake-button { padding: 5px 7px; }
   .edit-cupcake-button strong { font-size: 8px; }
   .sound-controls button { padding: 4px 5px; font-size: 7px; }
   .interface-guide { right: calc(100% + 10px); width: min(175px, calc(100vw - 190px)); }
@@ -689,7 +691,7 @@ button:focus-visible, a:focus-visible { outline: 3px solid #f2cf83; outline-offs
   .tracker-stack { top: 142px; right: 10px; align-items: flex-end; }
   .interface-guide { width: min(170px, calc(100vw - 211px)); }
   .tracker-panel { display: none; width: 180px; max-height: calc(100dvh - 195px); overflow: auto; overscroll-behavior: contain; }
-  .edit-cupcake-button { width: 180px; }
+  .edit-cupcake-area { width: 180px; }
   .tracker-panel.is-open { display: block; }
   .tracker-close { display: block; }
   .dialog-paper { padding: 18px 16px 15px; }

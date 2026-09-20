@@ -154,10 +154,18 @@
           <button class="reset-button" id="reset-button" type="button">Replay from Start</button>
         </aside>
 
-        <button class="edit-cupcake-button" id="edit-cupcake-button" type="button">
-          <strong>Edit Cupcake</strong>
-          <span id="cupcake-summary-compact"></span>
-        </button>
+        <div class="edit-cupcake-area">
+          <button class="edit-cupcake-button" id="edit-cupcake-button" type="button">
+            <strong>Edit Cupcake</strong>
+            <span id="cupcake-summary-compact"></span>
+          </button>
+          <aside class="interface-guide edit-cupcake-guide" id="edit-cupcake-guide" role="dialog" aria-labelledby="edit-cupcake-guide-title" hidden>
+            <span class="interface-guide-arrow" aria-hidden="true">&rarr;</span>
+            <strong id="edit-cupcake-guide-title">Remember!</strong>
+            <p>You can change your cupcake design anytime by clicking Edit Cupcake.</p>
+            <button id="edit-cupcake-guide-done" type="button">Got It</button>
+          </aside>
+        </div>
 
         <div class="sound-controls" aria-label="Background music controls">
           <button id="volume-down" type="button" aria-label="Decrease music volume">−</button>
@@ -179,12 +187,6 @@
           <button id="recipe-guide-done" type="button">Next</button>
         </aside>
 
-        <aside class="interface-guide edit-cupcake-guide" id="edit-cupcake-guide" role="dialog" aria-labelledby="edit-cupcake-guide-title" hidden>
-          <span class="interface-guide-arrow" aria-hidden="true">&rarr;</span>
-          <strong id="edit-cupcake-guide-title">Remember!</strong>
-          <p>You can change your cupcake design anytime by clicking Edit Cupcake.</p>
-          <button id="edit-cupcake-guide-done" type="button">Got It</button>
-        </aside>
       </div>
 
       <div class="confetti-layer" id="confetti-layer" aria-hidden="true"></div>
