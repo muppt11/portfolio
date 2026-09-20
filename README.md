@@ -44,6 +44,7 @@ The project structure was informed by [2d-portfolio-kaboom](https://github.com/J
 | Batter dispenser | Bubble Pop 06 | Universfield |
 | Batter mixing | Slimy | Freesound Community |
 | Station completion | Level Up 05 | Universfield |
+| Finish Quest | Button Pressed | Freesound Community |
 | Baking | White Noise | Danevaer |
 | Oven timer | Bell Ring | Dragon Studio |
 

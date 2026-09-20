@@ -17,6 +17,7 @@ import packageBoxUrl from "../audio/oxidvideos-placing-cardboard-box-453025.mp3?
 import bowWrapUrl from "../audio/freesound_community-plastic-pop-25324.mp3?url";
 import eatingSoundUrl from "../audio/betoelguapillo-cartoon-eating-sound-effect-427528.mp3?url";
 import conveyorSoundUrl from "../audio/freesound_community-bicycle-wheel-fx-39267.mp3?url";
+import finishQuestSoundUrl from "../audio/freesound_community-button-pressed-38129.mp3?url";
 import "./style.css";
 
 const STORAGE_KEY = "tanvis-code-bakery-quest";
@@ -44,6 +45,7 @@ const soundEffects = {
   bowWrap: { audio: new Audio(bowWrapUrl), volume: 1, duration: 2500 },
   eating: { audio: new Audio(eatingSoundUrl), volume: 1 },
   ovenBell: { audio: new Audio(ovenBellUrl), volume: 1 },
+  finishQuest: { audio: new Audio(finishQuestSoundUrl), volume: 1 },
 };
 const SPRINKLE_COLORS = ["#e98f9d", "#bd5656", "#f0c96b", "#87966f", "#7695a8", "#fff8e8"];
 const FROSTING_COLORS = {
@@ -1504,7 +1506,7 @@ function advanceQuest() {
     return;
   }
   if (pendingStepIndex !== currentStepIndex) return;
-  if (currentStepIndex === CUPCAKE_STEPS.length - 1) playSoundEffect("whoosh", QUIET_WHOOSH_VOLUME);
+  if (currentStepIndex === CUPCAKE_STEPS.length - 1) playSoundEffect("finishQuest");
   const completedStepId = CUPCAKE_STEPS[currentStepIndex]?.id;
   closeDialog(recipeDialog);
   currentStepIndex += 1;
