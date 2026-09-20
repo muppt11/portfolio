@@ -39,7 +39,7 @@ const soundEffects = {
   gameStart: { audio: new Audio(gameStartUrl), volume: 1 },
   quickLinks: { audio: new Audio(quickLinksAwwUrl), volume: 1 },
   shine: { audio: new Audio(sprinkleShineUrl), volume: 1 },
-  sprinkles: { audio: new Audio(sprinkleShakeUrl), volume: 1, duration: 3000 },
+  sprinkles: { audio: new Audio(sprinkleShakeUrl), volume: 1, duration: 1500 },
   packageBox: { audio: new Audio(packageBoxUrl), volume: 1 },
   bowWrap: { audio: new Audio(bowWrapUrl), volume: 1, duration: 2500 },
   eating: { audio: new Audio(eatingSoundUrl), volume: 1 },
