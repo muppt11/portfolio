@@ -52,6 +52,11 @@ button, a { font: inherit; touch-action: manipulation; }
   transition: opacity 250ms ease, transform 250ms ease, visibility 250ms;
 }
 
+.interface-tour-shade { position: absolute; inset: 0; z-index: 8; background: rgba(92, 92, 92, .32); pointer-events: none; animation: interface-shade-in 180ms ease-out both; }
+.interface-tour-shade[hidden] { display: none; }
+.tracker-stack.is-tour-active, .quest-card.is-tour-active { z-index: 9; }
+@keyframes interface-shade-in { from { opacity: 0; } to { opacity: 1; } }
+
 @keyframes welcome-pop {
   0% { opacity: 0; transform: translate(-50%, -46%) scale(.9); }
   68% { opacity: 1; transform: translate(-50%, -50%) scale(1.025); }

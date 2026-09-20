@@ -114,6 +114,7 @@ const stationIconGroups = new Map();
 
 const welcomePanel = document.querySelector("#welcome-panel");
 const gameShell = document.querySelector("#game-shell");
+const interfaceTourShade = document.querySelector("#interface-tour-shade");
 const backgroundMusic = document.querySelector("#background-music");
 const soundControls = document.querySelector(".sound-controls");
 const soundToggle = document.querySelector("#sound-toggle");
@@ -156,6 +157,7 @@ const questReward = document.querySelector("#quest-reward");
 const questDetail = document.querySelector("#quest-detail");
 const questProgress = document.querySelector("#quest-progress");
 const trackerCount = document.querySelector("#tracker-count");
+const trackerStack = document.querySelector(".tracker-stack");
 const trackerToggle = document.querySelector("#tracker-toggle");
 const trackerPanel = document.querySelector("#tracker-panel");
 const trackerClose = document.querySelector("#tracker-close");
@@ -1567,19 +1569,30 @@ function hideInterfaceGuides({ resumeGame = true } = {}) {
   trackerPanel.classList.remove("is-guided");
   editCupcakeButton.classList.remove("is-guided");
   quitGameButton.classList.remove("is-guided");
+  trackerStack.classList.remove("is-tour-active");
+  questPanel.classList.remove("is-tour-active");
+  interfaceTourShade.hidden = true;
   if (resumeGame && gameStarted) gamePaused = false;
+}
+
+function showInterfaceShade(target) {
+  interfaceTourShade.hidden = false;
+  trackerStack.classList.toggle("is-tour-active", target === "tracker");
+  questPanel.classList.toggle("is-tour-active", target === "quest");
 }
 
 function showSoundControlsGuide() {
   if (interfaceTourShown) return;
   interfaceTourShown = true;
   gamePaused = true;
+  showInterfaceShade("tracker");
   soundControlsGuide.hidden = false;
   soundControls.classList.add("is-guided");
   window.requestAnimationFrame(() => soundGuideNext.focus());
 }
 
 function showRecipeProgressGuide() {
+  showInterfaceShade("tracker");
   soundControlsGuide.hidden = true;
   soundControls.classList.remove("is-guided");
   trackerPanel.classList.add("is-visible", "is-open", "is-guided");
@@ -1590,6 +1603,7 @@ function showRecipeProgressGuide() {
 }
 
 function showQuitGameGuide() {
+  showInterfaceShade("quest");
   recipeProgressGuide.hidden = true;
   trackerPanel.classList.remove("is-guided");
   quitGameGuide.hidden = false;
@@ -2010,6 +2024,7 @@ playGameChoice.addEventListener("click", () => {
   playSoundEffect("gameStart");
   closeDialog(entryChoiceDialog);
   gamePaused = true;
+  showInterfaceShade();
   window.setTimeout(() => {
     soundNoticeDialog.showModal();
     soundNoticeClose.focus();
