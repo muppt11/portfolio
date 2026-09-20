@@ -1826,8 +1826,8 @@ function setupUiEvents() {
   skipButton.addEventListener("click", skipCurrentStep);
   recipeDialog.addEventListener("click", (event) => {
     if (event.target !== recipeDialog) return;
-    if (shouldRemindFinishQuest()) showFinishQuestReminder();
-    else closeDialog(recipeDialog);
+    finishQuestReminder.hidden = true;
+    closeDialog(recipeDialog);
   });
   finishQuestReminderClose.addEventListener("click", () => {
     finishQuestReminder.hidden = true;
@@ -2096,18 +2096,20 @@ quickNav.addEventListener("click", (event) => {
   if (event.target.closest("a")) hideQuickLinksGuide();
 });
 
-document.querySelectorAll(".dialog-close").forEach((closeButton) => closeButton.addEventListener("click", (event) => {
+document.addEventListener("click", (event) => {
+  const closeButton = event.target.closest?.(".dialog-close");
+  if (!closeButton) return;
   event.preventDefault();
   event.stopPropagation();
   const dialog = closeButton.closest("dialog");
   if (!dialog?.open) return;
-  if (dialog === recipeDialog && shouldRemindFinishQuest()) {
-    showFinishQuestReminder();
-    return;
+  if (dialog === soundNoticeDialog) closeSoundNotice();
+  else if (dialog === recipeDialog || dialog === frostingDialog || dialog === cupcakeEditorDialog) {
+    finishQuestReminder.hidden = true;
+    closeDialog(dialog);
   }
-  if (dialog === recipeDialog || dialog === frostingDialog || dialog === cupcakeEditorDialog) closeDialog(dialog);
   else dialog.close();
-}));
+}, true);
 objectiveDialog.addEventListener("click", (event) => {
   if (event.target === objectiveDialog) objectiveDialog.close();
 });
