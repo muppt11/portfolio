@@ -1442,6 +1442,7 @@ function serveOrder() {
   }
   if (servingStage !== "ready") return;
   playConveyorSound();
+  prepareOvenBell();
   servingStage = "delivering";
   servingInteraction.classList.add("is-delivering");
   servingFeedback.textContent = "The finished project box is on its way...";
@@ -1451,12 +1452,13 @@ function serveOrder() {
   servingTimer = window.setTimeout(() => {
     servingTimer = null;
     stopConveyorSound();
+    playOvenBell();
     servingStage = "complete";
     servingInteraction.classList.remove("is-delivering");
     servingInteraction.classList.add("is-delivered");
     const playerName = characterChoice.name.trim();
     customerSpeech.textContent = playerName ? `Ooh, yummy! Thank you, ${playerName}!` : "Ooh, yummy! Thank you!";
-    playSoundEffect("eating");
+    window.setTimeout(() => playSoundEffect("eating"), 160);
     servingFeedback.textContent = "Order delivered! The customer is ready to connect.";
     serveActionButton.disabled = false;
     serveActionButton.setAttribute("aria-disabled", "true");
