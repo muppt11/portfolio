@@ -26,7 +26,7 @@ npm run preview
 
 ## Credits
 
-The project structure was informed by [2d-portfolio-kaboom](https://github.com/JSLegendDev/2d-portfolio-kaboom) by JSLegendDev.
+The project structure was inspired by [2d-portfolio-kaboom](https://github.com/JSLegendDev/2d-portfolio-kaboom) by JSLegendDev.
 
 | Use | Track | Creator |
 | --- | --- | --- |
