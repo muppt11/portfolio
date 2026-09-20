@@ -18,6 +18,7 @@ import bowWrapUrl from "../audio/freesound_community-plastic-pop-25324.mp3?url";
 import eatingSoundUrl from "../audio/betoelguapillo-cartoon-eating-sound-effect-427528.mp3?url";
 import conveyorSoundUrl from "../audio/freesound_community-bicycle-wheel-fx-39267.mp3?url";
 import finishQuestSoundUrl from "../audio/freesound_community-button-pressed-38129.mp3?url";
+import characterOptionSoundUrl from "../audio/dragon-studio-button-press-382713.mp3?url";
 import "./style.css";
 
 const STORAGE_KEY = "tanvis-code-bakery-quest";
@@ -46,6 +47,7 @@ const soundEffects = {
   eating: { audio: new Audio(eatingSoundUrl), volume: 1 },
   ovenBell: { audio: new Audio(ovenBellUrl), volume: 1 },
   finishQuest: { audio: new Audio(finishQuestSoundUrl), volume: 1 },
+  characterOption: { audio: new Audio(characterOptionSoundUrl), volume: 1 },
 };
 const SPRINKLE_COLORS = ["#e98f9d", "#bd5656", "#f0c96b", "#87966f", "#7695a8", "#fff8e8"];
 const FROSTING_COLORS = {
@@ -1677,7 +1679,7 @@ function setupCharacterUi() {
     const choiceChanged = draftCharacter[swatch.dataset.characterType] !== swatch.dataset.characterValue;
     draftCharacter[swatch.dataset.characterType] = swatch.dataset.characterValue;
     renderCharacterPreview();
-    if (choiceChanged) playSoundEffect("whoosh", QUIET_WHOOSH_VOLUME);
+    if (choiceChanged) playSoundEffect("characterOption");
   });
   defaultCharacter.addEventListener("click", () => {
     const choiceChanged = Object.keys(DEFAULT_CHARACTER).some((key) => draftCharacter[key] !== DEFAULT_CHARACTER[key]);
@@ -1686,7 +1688,7 @@ function setupCharacterUi() {
     saveCharacterChoice();
     renderCharacterPreview();
     updatePlayerAppearance();
-    if (choiceChanged) playSoundEffect("whoosh", QUIET_WHOOSH_VOLUME);
+    if (choiceChanged) playSoundEffect("characterOption");
   });
   saveCharacter.addEventListener("click", () => {
     characterChoice = { ...draftCharacter };
