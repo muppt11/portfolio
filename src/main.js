@@ -38,7 +38,7 @@ const soundEffects = {
   gameStart: { audio: new Audio(gameStartUrl), volume: 1 },
   quickLinks: { audio: new Audio(quickLinksImpactUrl), volume: 1 },
   shine: { audio: new Audio(sprinkleShineUrl), volume: 1 },
-  sprinkles: { audio: new Audio(sprinkleShakeUrl), volume: 1, duration: 500 },
+  sprinkles: { audio: new Audio(sprinkleShakeUrl), volume: 1, duration: 2000 },
   packageBox: { audio: new Audio(packageBoxUrl), volume: 1 },
   eating: { audio: new Audio(eatingSoundUrl), volume: 1 },
   ovenBell: { audio: new Audio(ovenBellUrl), volume: 1 },
@@ -115,6 +115,7 @@ const customPixelCursor = document.querySelector("#custom-pixel-cursor");
 const cursorSprinkleLayer = document.querySelector("#cursor-sprinkle-layer");
 const gameHint = document.querySelector("#game-hint");
 const homeButton = document.querySelector("#home-button");
+const quitGameButton = document.querySelector("#quit-game-button");
 const questPanel = document.querySelector("#quest-panel");
 const questCount = document.querySelector("#quest-count");
 const questStep = document.querySelector("#quest-step");
@@ -1505,9 +1506,13 @@ function resetQuest() {
 function showHome() {
   if (bakingTimer) window.clearTimeout(bakingTimer);
   bakingTimer = null;
+  if (servingTimer) window.clearTimeout(servingTimer);
+  servingTimer = null;
   window.clearTimeout(ovenBellTimer);
   ovenBellTimer = null;
   stopBakingNoise();
+  stopBatterMixSound();
+  stopConveyorSound();
   [recipeDialog, frostingDialog, cupcakeEditorDialog, completionDialog, characterDialog].forEach((dialog) => {
     if (dialog.open) dialog.close();
   });
@@ -1794,6 +1799,10 @@ document.addEventListener("visibilitychange", () => {
   if (!document.hidden) playBackgroundMusic();
 });
 homeButton.addEventListener("click", () => {
+  hideQuickLinksGuide({ resumeGame: false });
+  showHome();
+});
+quitGameButton.addEventListener("click", () => {
   hideQuickLinksGuide({ resumeGame: false });
   showHome();
 });
