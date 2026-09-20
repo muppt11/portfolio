@@ -1345,6 +1345,7 @@ function openFrostingPanel({ review = false, stepIndex = currentStepIndex } = {}
   sprinkleToggle.hidden = true;
   previousFrostingButton.hidden = stepIndex === 0;
   frostButton.disabled = false;
+  frostButton.classList.remove("has-started");
   frostButton.textContent = "Tap to Frost";
   openDialog(frostingDialog, frostButton);
 }
@@ -1757,6 +1758,7 @@ function frostCupcake() {
     openRecipeCard(completedReview ? completedStepIndex : currentStepIndex, { review: completedReview });
     return;
   }
+  frostButton.classList.add("has-started");
   playSoundEffect("plop");
   frostingTaps += 1;
   const feedback = ["First swirl!", "Looking sweet!", "Perfectly frosted!"][frostingTaps - 1];

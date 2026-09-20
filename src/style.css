@@ -433,6 +433,10 @@ dialog::backdrop { background: rgba(59, 37, 32, 0.58); backdrop-filter: blur(2px
 .dialog-link[hidden] { display: none; }
 .previous-step-button[hidden] { display: none; }
 .continue-button, .frost-button { width: 100%; padding: 10px 12px; color: #3b2520; border: 0; background: #e98f9d; box-shadow: 4px 4px 0 #6f4436; cursor: pointer; font-size: 10px; text-align: left; }
+.frost-button { position: relative; }
+.frost-button::after { position: absolute; top: 50%; right: 11px; width: 18px; height: 22px; content: ""; background: url("./dispenser-cursor.svg") center / contain no-repeat; pointer-events: none; animation: frost-cursor-cue 750ms ease-in-out infinite; }
+.frost-button.has-started::after { display: none; }
+@keyframes frost-cursor-cue { 0%, 100% { transform: translateY(-46%) scale(.92); } 50% { transform: translate(-3px, -58%) scale(1); } }
 .continue-button span { float: right; font-size: 19px; line-height: 13px; }
 .continue-button:hover, .continue-button:focus-visible, .frost-button:hover, .frost-button:focus-visible { background: #d9788c; }
 .continue-button:disabled { cursor: not-allowed; opacity: .5; }
