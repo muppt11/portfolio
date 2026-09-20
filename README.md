@@ -39,6 +39,7 @@ The project structure was informed by [2d-portfolio-kaboom](https://github.com/J
 | Sprinkles | Salt Shaking | Freesound Community |
 | Packing | Placing Cardboard Box | Oxidvideos |
 | Customer delivery | Cartoon Eating Sound Effect | Betoelguapillo |
+| Conveyor belt | Bicycle Wheel FX | Freesound Community |
 | Batter dispenser | Bubble Pop 06 | Universfield |
 | Batter mixing | Slimy | Freesound Community |
 | Station completion | Level Up 05 | Universfield |

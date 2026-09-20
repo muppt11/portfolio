@@ -15,6 +15,7 @@ import sprinkleShineUrl from "../audio/faith_mulato-shine-193240.mp3?url";
 import sprinkleShakeUrl from "../audio/freesound_community-salt-shakingwav-14556.mp3?url";
 import packageBoxUrl from "../audio/oxidvideos-placing-cardboard-box-453025.mp3?url";
 import eatingSoundUrl from "../audio/betoelguapillo-cartoon-eating-sound-effect-427528.mp3?url";
+import conveyorSoundUrl from "../audio/freesound_community-bicycle-wheel-fx-39267.mp3?url";
 import "./style.css";
 
 const STORAGE_KEY = "tanvis-code-bakery-quest";
@@ -29,6 +30,7 @@ const MOBILE_LAYOUT = window.matchMedia("(max-width: 700px)");
 const FINE_POINTER = window.matchMedia("(pointer: fine)");
 const bakingNoise = new Audio(bakingNoiseUrl);
 const batterMixSound = new Audio(batterMixUrl);
+const conveyorSound = new Audio(conveyorSoundUrl);
 const soundEffects = {
   plop: { audio: new Audio(plopSoundUrl), volume: 1 },
   whoosh: { audio: new Audio(ingredientWhooshUrl), volume: 1 },
@@ -61,7 +63,7 @@ const CHARACTER_OPTIONS = {
   style: [["girl", "Girl", "#e98f9d"], ["boy", "Boy", "#7695a8"]],
   hair: [["brown", "Cocoa", "#623f36"], ["black", "Night", "#3b2520"], ["pink", "Berry", "#bd5656"], ["gold", "Honey", "#f2cf83"]],
   skin: [["peach", "Peach", "#f2c4a8"], ["warm", "Warm", "#c98262"], ["deep", "Deep", "#7c4b3a"], ["golden", "Golden", "#e0a477"]],
-  eyes: [["brown", "Cocoa", "#623f36"], ["green", "Sage", "#87966f"], ["blue", "Sky", "#7695a8"], ["black", "Black", "#2b1b1b"]],
+  eyes: [["brown", "Cocoa", "#51342f"], ["green", "Sage", "#87966f"], ["blue", "Sky", "#7695a8"], ["black", "Black", "#2b1b1b"]],
   shirt: [["yellow", "Honey", "#f2cf83"], ["pink", "Berry", "#e98f9d"], ["blue", "Sky", "#7695a8"], ["sage", "Sage", "#87966f"]],
 };
 const CHARACTER_LABELS = { style: "Character style", hair: "Hair color", skin: "Skin color", eyes: "Eye color", shirt: "Shirt color" };
@@ -333,11 +335,13 @@ function toggleBackgroundMusic() {
   if (musicEnabled) {
     playBackgroundMusic();
     if (bakingStage === "baking") playBakingNoise();
+    if (servingStage === "delivering") playConveyorSound();
   } else {
     backgroundMusic.volume = musicVolume;
     backgroundMusic.pause();
     stopBakingNoise();
     stopBatterMixSound();
+    stopConveyorSound();
   }
   updateSoundToggle();
 }
@@ -386,6 +390,18 @@ function playBatterMixSound() {
   batterMixSound.volume = 1;
   batterMixSound.play().catch(() => {});
   batterMixSoundTimer = window.setTimeout(stopBatterMixSound, 2200);
+}
+
+function stopConveyorSound() {
+  conveyorSound.pause();
+  conveyorSound.currentTime = 0;
+}
+
+function playConveyorSound() {
+  if (!musicEnabled) return;
+  stopConveyorSound();
+  conveyorSound.volume = 1;
+  conveyorSound.play().catch(() => {});
 }
 
 function playBakingNoise() {
@@ -889,6 +905,7 @@ function closeDialog(dialog) {
   if (dialog === recipeDialog && servingTimer) {
     window.clearTimeout(servingTimer);
     servingTimer = null;
+    stopConveyorSound();
   }
   if (dialog.open) dialog.close();
   if (player) player.destination = null;
@@ -1299,6 +1316,7 @@ function packageCupcakes() {
 function openServingInteraction() {
   if (servingTimer) window.clearTimeout(servingTimer);
   servingTimer = null;
+  stopConveyorSound();
   servingStage = "ready";
   finishQuestReminder.hidden = true;
   servingInteraction.style.setProperty("--bow-color", BOW_COLORS[cupcakeDesign.bowColor] ?? BOW_COLORS.berry);
@@ -1325,7 +1343,7 @@ function serveOrder() {
     return;
   }
   if (servingStage !== "ready") return;
-  playSoundEffect("plop");
+  playConveyorSound();
   servingStage = "delivering";
   servingInteraction.classList.add("is-delivering");
   servingFeedback.textContent = "The finished project box is on its way...";
@@ -1334,6 +1352,7 @@ function serveOrder() {
   const servingDuration = REDUCED_MOTION.matches ? 350 : 2200;
   servingTimer = window.setTimeout(() => {
     servingTimer = null;
+    stopConveyorSound();
     servingStage = "complete";
     servingInteraction.classList.remove("is-delivering");
     servingInteraction.classList.add("is-delivered");
@@ -1844,6 +1863,8 @@ Object.values(soundEffects).forEach(({ audio }) => {
 batterMixSound.preload = "auto";
 bakingNoise.preload = "auto";
 bakingNoise.loop = true;
+conveyorSound.preload = "auto";
+conveyorSound.loop = true;
 backgroundMusic.src = backgroundMusicUrl;
 backgroundMusic.volume = musicVolume;
 backgroundMusic.loop = true;
