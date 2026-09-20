@@ -159,11 +159,12 @@ h1 span { display: inline-block; margin-top: 5px; color: #ad4d4b; font-family: "
 .quest-card span { display: block; margin-top: 4px; font-size: 10px; line-height: 1.4; }
 .quest-reward { color: #e9a6a4; }
 .quest-instruction { color: #fff8ea; }
-.quest-progress { display: flex; gap: 4px; margin-top: 10px; }
+.quest-card-footer { display: flex; align-items: flex-end; justify-content: space-between; gap: 10px; margin-top: 10px; }
+.quest-progress { display: flex; gap: 4px; margin: 0; }
 .quest-progress span { width: 18px; height: 5px; margin: 0; background: #72504a; }
 .quest-progress span.is-current { background: #f0c96b; }
 .quest-progress span.is-done { background: #9eaf87; }
-.quit-game-button { min-height: 28px; margin-top: 10px; padding: 5px 8px; color: #fff8ea; border: 1px solid #f2d6ad; background: transparent; cursor: pointer; font: inherit; font-size: 8px; }
+.quit-game-button { min-height: 24px; margin: 0; padding: 4px 7px; color: #fff8ea; border: 1px solid #f2d6ad; background: transparent; cursor: pointer; font: inherit; font-size: 8px; }
 .quit-game-button:hover, .quit-game-button:focus-visible { color: #3b2520; background: #f2d6ad; }
 
 .tracker-stack { position: absolute; top: 14px; right: 10px; z-index: 7; display: flex; flex-direction: column; gap: 7px; align-items: flex-end; }
