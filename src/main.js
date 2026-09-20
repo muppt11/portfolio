@@ -31,6 +31,7 @@ const INTERFACE_CLICK_SELECTOR = [
   ".dialog-close",
   ".icon-button",
   "#quick-links-guide-close",
+  "#quick-links-got-it",
   "#finish-quest-reminder-close",
   "#character-name",
   "#open-guide",
@@ -38,6 +39,9 @@ const INTERFACE_CLICK_SELECTOR = [
   ".quick-nav button",
   ".quick-nav a",
   "#edit-cupcake-button",
+  "#sound-guide-next",
+  "#recipe-guide-done",
+  "#edit-cupcake-guide-done",
   "#decoration-options button",
   "#cupcake-editor-dialog button",
   "#volume-down",
@@ -1805,14 +1809,15 @@ function setupUiEvents() {
     openCupcakeEditor();
   });
   soundGuideNext.addEventListener("click", () => {
-    playSoundEffect("whoosh", QUIET_WHOOSH_VOLUME);
     showRecipeProgressGuide();
   });
   recipeGuideDone.addEventListener("click", () => {
-    playSoundEffect("whoosh", QUIET_WHOOSH_VOLUME);
     showQuitGameGuide();
   });
-  interfaceTourDone.addEventListener("click", hideInterfaceGuides);
+  interfaceTourDone.addEventListener("click", () => {
+    playSoundEffect("whoosh", QUIET_WHOOSH_VOLUME);
+    hideInterfaceGuides();
+  });
   editCupcakeGuideDone.addEventListener("click", hideInterfaceGuides);
   cupcakeEditorDone.addEventListener("click", () => closeDialog(cupcakeEditorDialog));
   editorDecorationOptions.addEventListener("click", (event) => {
