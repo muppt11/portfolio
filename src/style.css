@@ -300,7 +300,7 @@ dialog::backdrop { background: rgba(59, 37, 32, 0.58); backdrop-filter: blur(2px
 .dialog-content { margin: 0 0 12px; color: #6f4436; font-family: "DM Mono", monospace; font-size: 10px; line-height: 1.5; }
 .interaction-instruction { margin: 10px 0 7px; color: #6f4436; font-size: 9px; line-height: 1.45; }
 .ingredient-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-.ingredient-card { min-height: 88px; padding: 8px; color: #3b2520; border: 2px solid #6f4436; background: #f2d6ad; cursor: pointer; text-align: left; }
+.ingredient-card { position: relative; min-height: 88px; padding: 8px; color: #3b2520; border: 2px solid #6f4436; background: #f2d6ad; cursor: pointer; text-align: left; }
 .ingredient-card:hover, .ingredient-card:focus-visible { background: #fff5dc; border-color: #bd5656; }
 .ingredient-card.is-collected { border-color: #87966f; background: #edf0e7; cursor: default; }
 .ingredient-card strong, .ingredient-card small { display: block; }
@@ -311,7 +311,7 @@ dialog::backdrop { background: rgba(59, 37, 32, 0.58); backdrop-filter: blur(2px
 .batter-interaction { margin-top: 10px; }
 .batter-workspace { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; align-items: center; }
 .batter-ingredients { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-.batter-ingredient { min-height: 58px; padding: 5px; color: #3b2520; border: 2px solid #6f4436; background: #f2d6ad; cursor: grab; font-size: 9px; }
+.batter-ingredient { position: relative; min-height: 58px; padding: 5px; color: #3b2520; border: 2px solid #6f4436; background: #f2d6ad; cursor: grab; font-size: 9px; }
 .batter-ingredient:active { cursor: grabbing; }
 .batter-ingredient.is-dragging { border-color: #bd5656; background: #fff5dc; transform: translateY(-3px); }
 .batter-ingredient.is-added { border-color: #87966f; background: #edf0e7; opacity: .5; }
@@ -337,7 +337,11 @@ dialog::backdrop { background: rgba(59, 37, 32, 0.58); backdrop-filter: blur(2px
 .mixing-bowl.is-mixed .bowl-rim { animation: batter-ripple 700ms ease-in-out infinite alternate; }
 .bowl-rim { position: absolute; bottom: 52px; width: 101px; height: 15px; border: 3px solid #6f4436; border-radius: 50%; background: #fff8e8; }
 .batter-feedback { min-height: 14px; margin: 7px 0; color: #bd5656; font-size: 9px; text-align: center; }
-.whisk-button { width: 100%; padding: 9px; color: #fff8e8; border: 0; background: #87966f; box-shadow: 4px 4px 0 #6f4436; cursor: pointer; font-size: 10px; }
+.whisk-button { position: relative; width: 100%; padding: 9px; color: #fff8e8; border: 0; background: #87966f; box-shadow: 4px 4px 0 #6f4436; cursor: pointer; font-size: 10px; }
+.ingredient-card.is-next-choice, .batter-ingredient.is-next-choice, .whisk-button.is-next-choice { z-index: 1; border-color: #bd5656; box-shadow: 0 0 0 2px #fff8e8, 0 0 0 4px #e98f9d; }
+.ingredient-card.is-next-choice::after, .batter-ingredient.is-next-choice::after, .whisk-button.is-next-choice::after { position: absolute; top: 3px; right: 5px; z-index: 3; content: "\2193"; color: #fff8e8; font-family: "DM Mono", monospace; font-size: 17px; font-weight: 700; line-height: 1; pointer-events: none; filter: drop-shadow(1px 0 #6f4436) drop-shadow(-1px 0 #6f4436) drop-shadow(0 1px #6f4436) drop-shadow(0 -1px #6f4436); animation: next-choice-arrow 650ms ease-in-out infinite; }
+.whisk-button.is-next-choice::after { top: 7px; right: 10px; }
+@keyframes next-choice-arrow { 0%, 100% { transform: translateY(-2px); } 50% { transform: translateY(3px); } }
 .whisk-button:not([hidden]) { animation: whisk-pop 240ms ease-out both; }
 .whisk-button:disabled { cursor: not-allowed; opacity: .45; }
 .whisk-button.is-mixing .whisk-icon { display: inline-block; animation: whisk-spin 300ms linear 3; }

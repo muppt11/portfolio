@@ -1090,6 +1090,18 @@ function openBatterInteraction() {
   mixingBowl.querySelectorAll(".batter-pixel").forEach((pixel) => pixel.classList.remove("is-visible"));
   whiskTool.classList.remove("is-visible", "is-whisking");
   batterIngredients.innerHTML = ["Egg", "Butter", "Flour", "Sugar"].map((label) => `<button class="batter-ingredient" type="button" draggable="true" data-batter-ingredient="${label.toLowerCase()}"><span class="ingredient-icon ingredient-${label.toLowerCase()}" draggable="true" data-batter-ingredient="${label.toLowerCase()}" aria-hidden="true"></span><strong>${label}</strong></button>`).join("");
+  updateBatterIngredientGuide();
+}
+
+function updateBatterIngredientGuide() {
+  batterIngredients.querySelectorAll(".is-next-choice").forEach((ingredient) => ingredient.classList.remove("is-next-choice"));
+  whiskButton.classList.remove("is-next-choice");
+  const nextIngredient = ["egg", "butter", "flour", "sugar"].find((id) => !batterIngredientsAdded.has(id));
+  if (nextIngredient) {
+    batterIngredients.querySelector(`button[data-batter-ingredient="${nextIngredient}"]`)?.classList.add("is-next-choice");
+  } else if (whiskMixes < 1) {
+    whiskButton.classList.add("is-next-choice");
+  }
 }
 
 function addBatterIngredient(id) {
@@ -1105,6 +1117,7 @@ function addBatterIngredient(id) {
   whiskButton.disabled = batterIngredientsAdded.size < 4;
   whiskButton.hidden = batterIngredientsAdded.size < 4;
   continueButton.disabled = batterIngredientsAdded.size < 4 || whiskMixes < 1;
+  updateBatterIngredientGuide();
 }
 
 function whiskBatter() {
@@ -1121,6 +1134,7 @@ function whiskBatter() {
   batterFeedback.textContent = "Batter is ready!";
   whiskButton.innerHTML = "<span class=\"whisk-icon\" aria-hidden=\"true\">◡</span> Batter stirred!";
   whiskButton.disabled = true;
+  updateBatterIngredientGuide();
   mixingBowl.classList.add("is-mixed");
   window.setTimeout(() => {
     mixingBowl.querySelectorAll(".batter-pixel").forEach((pixel) => pixel.classList.remove("is-visible"));
@@ -1229,10 +1243,11 @@ function useOven() {
 }
 
 function renderIngredients(step, { revealAll = false } = {}) {
+  const nextIngredientId = revealAll ? null : step.ingredientItems.find((ingredient) => !collectedIngredients.has(ingredient.id))?.id;
   ingredientGrid.innerHTML = step.ingredientItems.map((ingredient) => {
     const isCollected = revealAll || collectedIngredients.has(ingredient.id);
     return `
-    <button class="ingredient-card ${isCollected ? "is-collected" : ""}" type="button" data-ingredient-id="${ingredient.id}" aria-pressed="${isCollected}" ${revealAll ? "disabled" : ""}>
+    <button class="ingredient-card ${isCollected ? "is-collected" : ""} ${ingredient.id === nextIngredientId ? "is-next-choice" : ""}" type="button" data-ingredient-id="${ingredient.id}" aria-pressed="${isCollected}" ${revealAll ? "disabled" : ""}>
       <span class="ingredient-icon ingredient-${ingredient.id}" aria-hidden="true"></span>
       <strong>${ingredient.label}</strong>
       <small class="ingredient-fact">${ingredient.fact}</small>
