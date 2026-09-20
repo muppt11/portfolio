@@ -175,7 +175,7 @@ h1 span { display: inline-block; margin-top: 5px; color: #ad4d4b; font-family: "
 .edit-cupcake-button strong, .edit-cupcake-button span { display: block; }
 .edit-cupcake-button strong { margin-bottom: 3px; font-size: 9px; }
 .edit-cupcake-button span { color: #7d5a4d; font-size: 6px; line-height: 1.35; }
-.tracker-panel { display: none; width: 185px; padding: 9px; color: #3b2520; border: 3px solid #6f4436; background: #fff8e8; box-shadow: 5px 5px 0 rgba(98, 63, 54, 0.22); }
+.tracker-panel { position: relative; display: none; width: 185px; padding: 9px; color: #3b2520; border: 3px solid #6f4436; background: #fff8e8; box-shadow: 5px 5px 0 rgba(98, 63, 54, 0.22); }
 .tracker-panel.is-visible { display: block; }
 .tracker-panel .quest-kicker { margin-bottom: 3px; font-size: 8px; letter-spacing: .7px; }
 .tracker-heading { gap: 7px; }
@@ -183,6 +183,12 @@ h1 span { display: inline-block; margin-top: 5px; color: #ad4d4b; font-family: "
 .icon-button, .dialog-close { width: 24px; height: 24px; padding: 0; color: #6f4436; border: 2px solid #6f4436; background: transparent; cursor: pointer; font-size: 18px; line-height: 16px; }
 .icon-button:hover, .icon-button:focus-visible, .dialog-close:hover, .dialog-close:focus-visible { color: #bd5656; border-color: #bd5656; }
 .tracker-close { width: 20px; height: 20px; font-size: 15px; line-height: 12px; }
+.assembly-close-guide[hidden] { display: none; }
+.assembly-close-guide { position: absolute; top: 36px; right: 8px; z-index: 3; width: 160px; padding: 8px; color: #3b2520; border: 2px solid #6f4436; background: #fff5dc; box-shadow: 4px 4px 0 rgba(61, 41, 41, .25); font-size: 7px; line-height: 1.4; }
+.assembly-close-guide strong, .assembly-close-guide span:not(.assembly-guide-cursor) { display: block; }
+.assembly-close-guide strong { margin-bottom: 3px; color: #bd5656; font-size: 8px; }
+.assembly-guide-cursor { position: absolute; top: -31px; right: -7px; width: 22px; height: 27px; background: url("./pixel-cursor.svg") center / contain no-repeat; pointer-events: none; animation: assembly-close-point 650ms ease-in-out infinite; }
+@keyframes assembly-close-point { 50% { transform: translate(-3px, 3px); } }
 .tracker-list { display: grid; gap: 2px; margin: 8px 0; }
 .tracker-step { display: flex; width: 100%; gap: 5px; align-items: center; padding: 4px 5px; border: 0; border-left: 3px solid transparent; background: transparent; font: inherit; font-size: 9px; line-height: 1.15; text-align: left; }
 .tracker-step.completed { cursor: pointer; }

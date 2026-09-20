@@ -126,6 +126,7 @@ const trackerCount = document.querySelector("#tracker-count");
 const trackerToggle = document.querySelector("#tracker-toggle");
 const trackerPanel = document.querySelector("#tracker-panel");
 const trackerClose = document.querySelector("#tracker-close");
+const assemblyCloseGuide = document.querySelector("#assembly-close-guide");
 const trackerList = document.querySelector("#tracker-list");
 const editCupcakeButton = document.querySelector("#edit-cupcake-button");
 const cupcakeSummaryCompact = document.querySelector("#cupcake-summary-compact");
@@ -632,7 +633,7 @@ function drawStationIcon(stationId, position) {
     addIconRect(8, 4, k.vec2(-17, -11), COLORS.sage, 1, 6);
 
     addIconRect(14, 35, k.vec2(0, 6), COLORS.brown, 0, 5);
-    addIconRect(9, 30, k.vec2(0, 6), COLORS.pink, 0, 6);
+    addIconRect(9, 30, k.vec2(0, 6), COLORS.pink, 1, 6);
     addIconRect(9, 5, k.vec2(0, -2), COLORS.cream, 0, 7);
     addIconCircle(6, k.vec2(0, -19), "#f7dfa0", 2, 7);
 
@@ -948,7 +949,7 @@ function openRecipeCard(stepIndex, { review = false } = {}) {
   if (step.id === "packaging") openPackagingInteraction();
   if (step.id === "serving") openServingInteraction();
   continueButton.disabled = step.id === "ingredients" && collectedIngredients.size < step.ingredientItems.length
-    || step.id === "batter" && (batterIngredientsAdded.size < 4 || whiskMixes < 2)
+    || step.id === "batter" && (batterIngredientsAdded.size < 4 || whiskMixes < 1)
     || step.id === "tray" && trayCupsFilled < 4
     || step.id === "baking" && bakingStage !== "complete"
     || step.id === "decorating" && cupcakeDesign.decoration === "none"
@@ -989,11 +990,11 @@ function addBatterIngredient(id) {
   batterFeedback.textContent = batterIngredientsAdded.size === 4 ? "All ingredients are in. Time to whisk!" : `${4 - batterIngredientsAdded.size} ingredients to add.`;
   whiskButton.disabled = batterIngredientsAdded.size < 4;
   whiskButton.hidden = batterIngredientsAdded.size < 4;
-  continueButton.disabled = batterIngredientsAdded.size < 4 || whiskMixes < 2;
+  continueButton.disabled = batterIngredientsAdded.size < 4 || whiskMixes < 1;
 }
 
 function whiskBatter() {
-  if (whiskButton.disabled || whiskMixes >= 2) return;
+  if (whiskButton.disabled || whiskMixes >= 1) return;
   playBatterMixSound();
   whiskMixes += 1;
   whiskTool.classList.add("is-visible");
@@ -1003,14 +1004,15 @@ function whiskBatter() {
   whiskButton.classList.remove("is-mixing");
   void whiskButton.offsetWidth;
   whiskButton.classList.add("is-mixing");
-  batterFeedback.textContent = whiskMixes === 1 ? "Click again to whisk." : "Batter is ready!";
-  whiskButton.innerHTML = whiskMixes === 1 ? "<span class=\"whisk-icon\" aria-hidden=\"true\">◡</span> Click again to whisk" : "<span class=\"whisk-icon\" aria-hidden=\"true\">◡</span> Batter stirred!";
-  mixingBowl.classList.toggle("is-mixed", whiskMixes === 2);
-  if (whiskMixes === 2) {
+  batterFeedback.textContent = "Batter is ready!";
+  whiskButton.innerHTML = "<span class=\"whisk-icon\" aria-hidden=\"true\">◡</span> Batter stirred!";
+  whiskButton.disabled = true;
+  mixingBowl.classList.add("is-mixed");
+  window.setTimeout(() => {
     mixingBowl.querySelectorAll(".batter-pixel").forEach((pixel) => pixel.classList.remove("is-visible"));
     whiskTool.classList.remove("is-visible");
-  }
-  continueButton.disabled = whiskMixes < 2;
+  }, 650);
+  continueButton.disabled = false;
 }
 
 function openTrayInteraction() {
@@ -1435,6 +1437,7 @@ function advanceQuest() {
     return;
   }
   if (pendingStepIndex !== currentStepIndex) return;
+  const completedStepId = CUPCAKE_STEPS[currentStepIndex]?.id;
   closeDialog(recipeDialog);
   currentStepIndex += 1;
   playSoundEffect("levelUp");
@@ -1450,7 +1453,19 @@ function advanceQuest() {
     }, 180);
   } else {
     celebrateStep();
+    if (completedStepId === "tray") window.setTimeout(showAssemblyCloseGuide, 220);
   }
+}
+
+function showAssemblyCloseGuide() {
+  trackerPanel.classList.add("is-visible", "is-open");
+  trackerToggle.classList.remove("is-visible");
+  trackerToggle.setAttribute("aria-expanded", "true");
+  assemblyCloseGuide.hidden = false;
+}
+
+function hideAssemblyCloseGuide() {
+  assemblyCloseGuide.hidden = true;
 }
 
 function skipCurrentStep() {
@@ -1521,6 +1536,7 @@ function showHome() {
   welcomePanel.classList.remove("is-hidden");
   questPanel.classList.remove("is-visible");
   trackerPanel.classList.remove("is-visible", "is-open");
+  hideAssemblyCloseGuide();
   trackerToggle.classList.remove("is-visible");
   gameHint.classList.remove("is-visible");
 }
@@ -1567,6 +1583,7 @@ function setupUiEvents() {
     trackerToggle.setAttribute("aria-expanded", "true");
   });
   trackerClose.addEventListener("click", () => {
+    hideAssemblyCloseGuide();
     trackerPanel.classList.remove("is-open", "is-visible");
     trackerToggle.classList.add("is-visible");
     trackerToggle.setAttribute("aria-expanded", "false");
