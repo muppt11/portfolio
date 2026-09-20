@@ -253,6 +253,7 @@ let playerParts = null;
 let activeMarker = null;
 let activeMarkerShadow = null;
 let activeMarkerPlate = null;
+let activeMarkerArrowParts = [];
 let gamePaused = true;
 let pendingStepIndex = null;
 let frostingTaps = 0;
@@ -937,6 +938,8 @@ function clearMarker() {
     activeMarkerPlate.destroy();
     activeMarkerPlate = null;
   }
+  activeMarkerArrowParts.forEach(({ node }) => node.destroy());
+  activeMarkerArrowParts = [];
 }
 
 function highlightStation() {
@@ -944,28 +947,43 @@ function highlightStation() {
   const step = CUPCAKE_STEPS[currentStepIndex];
   if (!step || freeExplore) return;
   const position = stationPositions[step.stationId];
+  const markerY = position.y - 82;
+  const markerText = currentStepIndex === 0 ? "CLICK HERE TO START" : "CLICK HERE TO CONTINUE";
   activeMarkerShadow = k.add([
-    k.rect(54, 20),
+    k.rect(132, 20),
     k.color(k.Color.fromHex(COLORS.cocoa)),
-    k.pos(position.add(k.vec2(4, -74))),
+    k.pos(position.x + 4, markerY + 4),
     k.anchor("center"),
     k.z(8),
   ]);
   activeMarkerPlate = k.add([
-    k.rect(54, 20),
+    k.rect(132, 20),
     k.color(k.Color.fromHex(COLORS.cream)),
     k.outline(2, k.Color.fromHex(COLORS.brown)),
-    k.pos(position.add(k.vec2(0, -78))),
+    k.pos(position.x, markerY),
     k.anchor("center"),
     k.z(9),
   ]);
-  activeMarker = createLabel(k, "NEXT", position.add(k.vec2(0, -78)), { size: 9, color: COLORS.red });
+  activeMarker = createLabel(k, markerText, k.vec2(position.x, markerY), { size: 7, color: COLORS.red });
+  [[4, 8, 14], [12, 4, 20], [8, 4, 24], [4, 4, 28]].forEach(([width, height, offsetY]) => {
+    const node = k.add([
+      k.rect(width, height),
+      k.color(k.Color.fromHex(COLORS.red)),
+      k.pos(position.x, markerY + offsetY),
+      k.anchor("center"),
+      k.z(10),
+    ]);
+    activeMarkerArrowParts.push({ node, offsetY });
+  });
   activeMarker.onUpdate(() => {
     if (gamePaused) return;
-    const markerY = position.y - 78 + Math.sin(k.time() * 4) * 4;
-    activeMarker.pos.y = markerY;
-    activeMarkerShadow.pos = k.vec2(position.x + 3, markerY + 3);
-    activeMarkerPlate.pos = k.vec2(position.x, markerY);
+    const animatedY = markerY + Math.sin(k.time() * 4) * 4;
+    activeMarker.pos.y = animatedY;
+    activeMarkerShadow.pos = k.vec2(position.x + 4, animatedY + 4);
+    activeMarkerPlate.pos = k.vec2(position.x, animatedY);
+    activeMarkerArrowParts.forEach(({ node, offsetY }) => {
+      node.pos = k.vec2(position.x, animatedY + offsetY);
+    });
   });
 }
 
