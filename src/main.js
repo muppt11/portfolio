@@ -1,17 +1,47 @@
 import { k } from "./kaboomCtx";
 import { BAKERY_STATIONS, COLORS, CUPCAKE_STEPS, GAME_HEIGHT, GAME_WIDTH } from "./constants";
 import { clamp, createLabel, createPixelRect } from "./utils";
-import backgroundMusicUrl from "../maksymmalko-funny-cartoon-music-532611.mp3?url";
+import backgroundMusicUrl from "../audio/maksymmalko-funny-cartoon-music-532611.mp3?url";
+import plopSoundUrl from "../audio/freesound_community-water-splash-80537.mp3?url";
+import bakingNoiseUrl from "../audio/danevaer-white-noise-434731.mp3?url";
+import ovenBellUrl from "../audio/dragon-studio-bell-ring-390294.mp3?url";
+import ingredientWhooshUrl from "../audio/dragon-studio-simple-whoosh-382724.mp3?url";
+import dispensePopUrl from "../audio/universfield-bubble-pop-06-351337.mp3?url";
+import batterMixUrl from "../audio/freesound_community-slimy-77623.mp3?url";
+import levelUpUrl from "../audio/universfield-level-up-05-326133.mp3?url";
+import gameStartUrl from "../audio/freesound_community-086354_8-bit-arcade-video-game-start-sound-effect-gun-reload-and-jump-81124.mp3?url";
+import quickLinksImpactUrl from "../audio/universfield-cartoon-impact-02-278820.mp3?url";
+import sprinkleShineUrl from "../audio/faith_mulato-shine-193240.mp3?url";
+import sprinkleShakeUrl from "../audio/freesound_community-salt-shakingwav-14556.mp3?url";
+import packageBoxUrl from "../audio/oxidvideos-placing-cardboard-box-453025.mp3?url";
+import eatingSoundUrl from "../audio/betoelguapillo-cartoon-eating-sound-effect-427528.mp3?url";
 import "./style.css";
 
 const STORAGE_KEY = "tanvis-code-bakery-quest";
 const CHARACTER_KEY = "tanvis-code-bakery-character";
 const CUPCAKE_KEY = "tanvis-code-bakery-cupcake";
 const MUSIC_KEY = "tanvis-code-bakery-music";
+const VOLUME_KEY = "tanvis-code-bakery-volume";
+const QUIET_WHOOSH_VOLUME = 0.8;
 const HOVER_CAPABLE = window.matchMedia("(hover: hover)");
 const REDUCED_MOTION = window.matchMedia("(prefers-reduced-motion: reduce)");
 const MOBILE_LAYOUT = window.matchMedia("(max-width: 700px)");
 const FINE_POINTER = window.matchMedia("(pointer: fine)");
+const bakingNoise = new Audio(bakingNoiseUrl);
+const batterMixSound = new Audio(batterMixUrl);
+const soundEffects = {
+  plop: { audio: new Audio(plopSoundUrl), volume: 1 },
+  whoosh: { audio: new Audio(ingredientWhooshUrl), volume: 1 },
+  dispense: { audio: new Audio(dispensePopUrl), volume: 1 },
+  levelUp: { audio: new Audio(levelUpUrl), volume: 1 },
+  gameStart: { audio: new Audio(gameStartUrl), volume: 1 },
+  quickLinks: { audio: new Audio(quickLinksImpactUrl), volume: 1 },
+  shine: { audio: new Audio(sprinkleShineUrl), volume: 1 },
+  sprinkles: { audio: new Audio(sprinkleShakeUrl), volume: 1 },
+  packageBox: { audio: new Audio(packageBoxUrl), volume: 1 },
+  eating: { audio: new Audio(eatingSoundUrl), volume: 1 },
+  ovenBell: { audio: new Audio(ovenBellUrl), volume: 1 },
+};
 const SPRINKLE_COLORS = ["#e98f9d", "#bd5656", "#f0c96b", "#87966f", "#7695a8", "#fff8e8"];
 const FROSTING_COLORS = {
   chocolate: ["#7b4b3a", "#563227", "rgba(59, 37, 32, .22)"],
@@ -49,7 +79,7 @@ const stationEntries = Object.entries(stationPositions);
 const stationLabels = {
   cafeTable: "Ingredients",
   recipeBook: "Batter",
-  displayCase: "Tray",
+  displayCase: "Assembly",
   oven: "Baking",
   frostingCounter: "Frosting",
   decoratingCounter: "Decorating",
@@ -61,7 +91,10 @@ const stationIconGroups = new Map();
 const welcomePanel = document.querySelector("#welcome-panel");
 const gameShell = document.querySelector("#game-shell");
 const backgroundMusic = document.querySelector("#background-music");
+const soundControls = document.querySelector(".sound-controls");
 const soundToggle = document.querySelector("#sound-toggle");
+const volumeDown = document.querySelector("#volume-down");
+const volumeUp = document.querySelector("#volume-up");
 const startButton = document.querySelector("#start-button");
 const objectiveHelp = document.querySelector("#objective-help");
 const objectiveDialog = document.querySelector("#objective-dialog");
@@ -69,6 +102,13 @@ const openGuideButton = document.querySelector("#open-guide");
 const openGuideDialog = document.querySelector("#open-guide-dialog");
 const openGuideCustomize = document.querySelector("#open-guide-customize");
 const openGuideEnter = document.querySelector("#open-guide-enter");
+const entryChoiceDialog = document.querySelector("#entry-choice-dialog");
+const playGameChoice = document.querySelector("#play-game-choice");
+const quickLinksChoice = document.querySelector("#quick-links-choice");
+const quickNav = document.querySelector(".quick-nav");
+const quickLinksGuide = document.querySelector("#quick-links-guide");
+const quickLinksGuideClose = document.querySelector("#quick-links-guide-close");
+const quickLinksGotIt = document.querySelector("#quick-links-got-it");
 const gameCanvas = document.querySelector("#game-canvas");
 const customPixelCursor = document.querySelector("#custom-pixel-cursor");
 const cursorSprinkleLayer = document.querySelector("#cursor-sprinkle-layer");
@@ -85,7 +125,14 @@ const trackerToggle = document.querySelector("#tracker-toggle");
 const trackerPanel = document.querySelector("#tracker-panel");
 const trackerClose = document.querySelector("#tracker-close");
 const trackerList = document.querySelector("#tracker-list");
+const editCupcakeButton = document.querySelector("#edit-cupcake-button");
+const cupcakeSummaryCompact = document.querySelector("#cupcake-summary-compact");
 const resetButton = document.querySelector("#reset-button");
+const cupcakeEditorDialog = document.querySelector("#cupcake-editor-dialog");
+const cupcakeEditorDone = document.querySelector("#cupcake-editor-done");
+const cupcakeEditorSummary = document.querySelector("#cupcake-editor-summary");
+const editorCupcakePreview = document.querySelector("#editor-cupcake-preview");
+const editorDecorationOptions = document.querySelector("#editor-decoration-options");
 const recipeDialog = document.querySelector("#recipe-dialog");
 const recipeStepNumber = document.querySelector("#recipe-step-number");
 const recipeTitle = document.querySelector("#recipe-title");
@@ -134,6 +181,8 @@ const recipeInteractions = {
 const recipeLink = document.querySelector("#recipe-link");
 const previousStepButton = document.querySelector("#previous-step-button");
 const continueButton = document.querySelector("#continue-button");
+const finishQuestReminder = document.querySelector("#finish-quest-reminder");
+const finishQuestReminderClose = document.querySelector("#finish-quest-reminder-close");
 const skipButton = document.querySelector("#skip-button");
 const frostingDialog = document.querySelector("#frosting-dialog");
 const previousFrostingButton = document.querySelector("#previous-frosting-button");
@@ -179,21 +228,31 @@ let whiskMixes = 0;
 let trayCupsFilled = 0;
 let bakingStage = "ready";
 let bakingTimer = null;
+let ovenBellTimer = null;
+let soundContext = null;
+let ovenBellBufferPromise = null;
 let packagingStage = "ready";
 let ribbonPreviewTimer = null;
 let servingStage = "ready";
 let servingTimer = null;
 let draggingBatterIngredient = null;
+let batterMixSoundTimer = null;
 let previousFocus = null;
 let reviewMode = false;
 let activeDialogStepIndex = null;
-let insideStationId = null;
 let freeExplore = currentStepIndex >= CUPCAKE_STEPS.length;
 let gameStarted = false;
+let entryChoiceShown = false;
 let lastSprinkleTime = 0;
 let cursorSprinkleCount = 0;
 let toastTimer = null;
 let musicEnabled = localStorage.getItem(MUSIC_KEY) !== "off";
+const savedMusicVolume = localStorage.getItem(VOLUME_KEY);
+const parsedMusicVolume = Number(savedMusicVolume);
+let musicVolume = savedMusicVolume !== null && Number.isFinite(parsedMusicVolume)
+  ? clamp(parsedMusicVolume, 0, 0.5)
+  : 0.25;
+let soundControlsExpanded = false;
 let characterChoice = readCharacter();
 let draftCharacter = { ...characterChoice };
 
@@ -243,21 +302,146 @@ function saveProgress() {
 }
 
 function updateSoundToggle() {
-  soundToggle.textContent = musicEnabled ? "♫ Music On" : "♫ Music Off";
+  soundToggle.textContent = musicEnabled ? `♫ ${Math.round(musicVolume * 100)}%` : "♫ Off";
   soundToggle.setAttribute("aria-pressed", String(musicEnabled));
-  soundToggle.setAttribute("aria-label", musicEnabled ? "Mute background music" : "Play background music");
+  soundToggle.setAttribute("aria-label", soundControlsExpanded
+    ? (musicEnabled ? "Mute background music" : "Play background music")
+    : "Show music controls");
+  volumeDown.disabled = musicVolume <= 0;
+  volumeUp.disabled = musicVolume >= 0.5;
+}
+
+function removeMusicUnlockListeners() {
+  document.removeEventListener("pointerdown", unlockBackgroundMusic, true);
+  document.removeEventListener("keydown", unlockBackgroundMusic, true);
 }
 
 function playBackgroundMusic() {
-  if (musicEnabled && backgroundMusic.paused) backgroundMusic.play().catch(() => {});
+  if (!musicEnabled || !backgroundMusic.paused) return;
+  backgroundMusic.play()
+    .then(removeMusicUnlockListeners)
+    .catch(() => backgroundMusic.load());
+}
+
+function unlockBackgroundMusic() {
+  playBackgroundMusic();
 }
 
 function toggleBackgroundMusic() {
   musicEnabled = !musicEnabled;
   localStorage.setItem(MUSIC_KEY, musicEnabled ? "on" : "off");
-  if (musicEnabled) playBackgroundMusic();
-  else backgroundMusic.pause();
+  if (musicEnabled) {
+    playBackgroundMusic();
+    if (bakingStage === "baking") playBakingNoise();
+  } else {
+    backgroundMusic.volume = musicVolume;
+    backgroundMusic.pause();
+    stopBakingNoise();
+    stopBatterMixSound();
+  }
   updateSoundToggle();
+}
+
+function setSoundControlsExpanded(expanded) {
+  soundControlsExpanded = expanded;
+  soundControls.classList.toggle("is-expanded", expanded);
+  soundToggle.setAttribute("aria-expanded", String(expanded));
+  updateSoundToggle();
+}
+
+function adjustBackgroundVolume(change) {
+  musicVolume = clamp(Math.round((musicVolume + change) * 100) / 100, 0, 0.5);
+  backgroundMusic.volume = musicVolume;
+  localStorage.setItem(VOLUME_KEY, String(musicVolume));
+  if (!musicEnabled) {
+    musicEnabled = true;
+    localStorage.setItem(MUSIC_KEY, "on");
+    playBackgroundMusic();
+    if (bakingStage === "baking") playBakingNoise();
+  }
+  bakingNoise.volume = musicVolume === 0 ? 0 : clamp(musicVolume * 3.2, 0.4, 1);
+  updateSoundToggle();
+}
+
+function playSoundEffect(name, volumeOverride) {
+  if (!musicEnabled) return;
+  const effect = soundEffects[name];
+  if (!effect) return;
+  const sound = effect.audio.cloneNode();
+  const defaultVolume = typeof effect.volume === "function" ? effect.volume() : effect.volume;
+  sound.volume = volumeOverride ?? defaultVolume;
+  sound.play().catch(() => {});
+}
+
+function stopBatterMixSound() {
+  window.clearTimeout(batterMixSoundTimer);
+  batterMixSoundTimer = null;
+  batterMixSound.pause();
+  batterMixSound.currentTime = 0;
+}
+
+function playBatterMixSound() {
+  if (!musicEnabled) return;
+  stopBatterMixSound();
+  batterMixSound.volume = 1;
+  batterMixSound.play().catch(() => {});
+  batterMixSoundTimer = window.setTimeout(stopBatterMixSound, 2200);
+}
+
+function playBakingNoise() {
+  if (!musicEnabled || !bakingNoise.paused) return;
+  bakingNoise.volume = musicVolume === 0 ? 0 : clamp(musicVolume * 3.2, 0.4, 1);
+  bakingNoise.play().catch(() => {});
+}
+
+function stopBakingNoise() {
+  bakingNoise.pause();
+  bakingNoise.currentTime = 0;
+}
+
+function prepareOvenBell() {
+  const AudioContextClass = window.AudioContext ?? window.webkitAudioContext;
+  if (!AudioContextClass) return null;
+  if (!soundContext) soundContext = new AudioContextClass();
+  if (soundContext.state === "suspended") soundContext.resume().catch(() => {});
+  if (!ovenBellBufferPromise) {
+    ovenBellBufferPromise = fetch(ovenBellUrl)
+      .then((response) => response.arrayBuffer())
+      .then((data) => soundContext.decodeAudioData(data))
+      .catch(() => null);
+  }
+  return ovenBellBufferPromise;
+}
+
+async function playOvenBell() {
+  if (!musicEnabled) return;
+  const buffer = await prepareOvenBell();
+  if (!buffer || !soundContext) {
+    playSoundEffect("ovenBell");
+    return;
+  }
+  const source = soundContext.createBufferSource();
+  const gain = soundContext.createGain();
+  const compressor = soundContext.createDynamicsCompressor();
+  source.buffer = buffer;
+  gain.gain.value = 3;
+  compressor.threshold.value = -12;
+  compressor.knee.value = 10;
+  compressor.ratio.value = 8;
+  compressor.attack.value = 0.003;
+  compressor.release.value = 0.2;
+  source.connect(gain).connect(compressor).connect(soundContext.destination);
+  source.start();
+}
+
+function finishBakingSound() {
+  stopBakingNoise();
+  window.clearTimeout(ovenBellTimer);
+  ovenBellTimer = window.setTimeout(() => {
+    ovenBellTimer = null;
+    if (!musicEnabled) return;
+    playOvenBell();
+  }, 40);
 }
 
 function updateChoiceButtons(buttons, dataKey, selectedValue) {
@@ -390,9 +574,9 @@ function drawStationIcon(stationId, position) {
 
   if (stationId === "displayCase") {
     addIconRect(72, 44, k.vec2(0, 2), COLORS.cocoa);
-    addIconRect(68, 40, k.vec2(0, 1), COLORS.cream);
-    addIconRect(74, 4, k.vec2(0, -21), COLORS.brown);
-    addIconRect(74, 4, k.vec2(0, 25), COLORS.brown);
+    addIconRect(69, 41, k.vec2(0, 2), COLORS.cream);
+    addIconRect(72, 3, k.vec2(0, -20), COLORS.brown);
+    addIconRect(72, 3, k.vec2(0, 24), COLORS.brown);
     for (const y of [-9, 11]) {
       for (const x of [-21, 0, 21]) {
         addIconCircle(7, k.vec2(x, y), COLORS.brown, 0, 5);
@@ -528,6 +712,36 @@ function renderCharacterPreview() {
     </div></fieldset>`).join("");
 }
 
+function playerHairShape() {
+  return characterChoice.style === "boy"
+    ? { width: 34, height: 20, y: -17 }
+    : { width: 40, height: 52, y: -7 };
+}
+
+function positionPlayerParts() {
+  if (!player || !playerParts) return;
+  const hairShape = playerHairShape();
+  playerParts.hair.pos = player.pos.add(k.vec2(0, hairShape.y));
+  playerParts.outfit.pos = player.pos.add(k.vec2(0, 16));
+  playerParts.leftEye.pos = player.pos.add(k.vec2(-6, -3));
+  playerParts.rightEye.pos = player.pos.add(k.vec2(6, -3));
+  if (playerParts.nameLabel) playerParts.nameLabel.pos = player.pos.add(k.vec2(0, -40));
+}
+
+function updatePlayerAppearance() {
+  if (!player || !playerParts) return;
+  const hairShape = playerHairShape();
+  player.color = k.Color.fromHex(selectedColor("skin", characterChoice.skin));
+  playerParts.hair.color = k.Color.fromHex(selectedColor("hair", characterChoice.hair));
+  playerParts.hair.width = hairShape.width;
+  playerParts.hair.height = hairShape.height;
+  playerParts.outfit.color = k.Color.fromHex(selectedColor("shirt", characterChoice.shirt));
+  const eyeColor = k.Color.fromHex(selectedColor("eyes", characterChoice.eyes));
+  playerParts.leftEye.color = eyeColor;
+  playerParts.rightEye.color = eyeColor;
+  positionPlayerParts();
+}
+
 function openCharacterCreator() {
   draftCharacter = { ...characterChoice };
   renderCharacterPreview();
@@ -547,7 +761,8 @@ function addPlayer() {
     k.area({ shape: new k.Rect(k.vec2(0), 28, 38) }), k.anchor("center"), k.z(20),
     { speed: 440, destination: null }, "player",
   ]);
-  const hair = k.add([k.rect(characterChoice.style === "girl" ? 40 : 32, characterChoice.style === "girl" ? 52 : 34), k.color(k.Color.fromHex(hairColor)), k.outline(2, k.Color.fromHex(COLORS.cocoa)), k.pos(player.pos.x, player.pos.y - 7), k.anchor("center"), k.z(19), "player-hair"]);
+  const hairShape = playerHairShape();
+  const hair = k.add([k.rect(hairShape.width, hairShape.height), k.color(k.Color.fromHex(hairColor)), k.outline(2, k.Color.fromHex(COLORS.cocoa)), k.pos(player.pos.x, player.pos.y + hairShape.y), k.anchor("center"), k.z(19), "player-hair"]);
   const outfit = k.add([k.rect(30, 22), k.color(k.Color.fromHex(shirtColor)), k.outline(2, k.Color.fromHex(COLORS.cocoa)), k.pos(player.pos.x, player.pos.y + 16), k.anchor("center"), k.z(21), "player-outfit"]);
   const leftEye = k.add([k.rect(4, 4), k.color(k.Color.fromHex(eyeColor)), k.outline(1, k.Color.fromHex("#2b1b1b")), k.pos(player.pos.x - 6, player.pos.y - 3), k.anchor("center"), k.z(22), "player-eye-left"]);
   const rightEye = k.add([k.rect(4, 4), k.color(k.Color.fromHex(eyeColor)), k.outline(1, k.Color.fromHex("#2b1b1b")), k.pos(player.pos.x + 6, player.pos.y - 3), k.anchor("center"), k.z(22), "player-eye-right"]);
@@ -663,9 +878,13 @@ function openDialog(dialog, focusTarget) {
 }
 
 function closeDialog(dialog) {
-  if (dialog === recipeDialog && bakingTimer) {
-    window.clearTimeout(bakingTimer);
+  if (dialog === recipeDialog) {
+    if (bakingTimer) window.clearTimeout(bakingTimer);
     bakingTimer = null;
+    window.clearTimeout(ovenBellTimer);
+    ovenBellTimer = null;
+    stopBakingNoise();
+    stopBatterMixSound();
   }
   if (dialog === recipeDialog && servingTimer) {
     window.clearTimeout(servingTimer);
@@ -684,6 +903,7 @@ function closeDialog(dialog) {
 
 function openRecipeCard(stepIndex, { review = false } = {}) {
   const step = CUPCAKE_STEPS[stepIndex];
+  finishQuestReminder.hidden = true;
   reviewMode = review;
   activeDialogStepIndex = stepIndex;
   pendingStepIndex = review ? null : stepIndex;
@@ -722,6 +942,7 @@ function openRecipeCard(stepIndex, { review = false } = {}) {
 }
 
 function openBatterInteraction() {
+  stopBatterMixSound();
   batterIngredientsAdded = new Set();
   whiskMixes = 0;
   batterFeedback.textContent = "4 ingredients to add.";
@@ -740,6 +961,7 @@ function addBatterIngredient(id) {
   const ingredient = batterIngredients.querySelector(`[data-batter-ingredient="${id}"]`);
   if (!ingredient) return;
   ingredient.classList.add("is-added");
+  playSoundEffect("plop");
   ingredient?.setAttribute("aria-pressed", "true");
   mixingBowl.querySelector(`.batter-pixel-${id}`)?.classList.add("is-visible");
   batterFeedback.textContent = batterIngredientsAdded.size === 4 ? "All ingredients are in. Time to whisk!" : `${4 - batterIngredientsAdded.size} ingredients to add.`;
@@ -750,6 +972,7 @@ function addBatterIngredient(id) {
 
 function whiskBatter() {
   if (whiskButton.disabled || whiskMixes >= 2) return;
+  playBatterMixSound();
   whiskMixes += 1;
   whiskTool.classList.add("is-visible");
   whiskTool.classList.remove("is-whisking");
@@ -786,6 +1009,7 @@ function updateBatterFlavorUi() {
 
 function selectBatterFlavor(flavor) {
   if (!BATTER_COLORS[flavor]) return;
+  const flavorChanged = cupcakeDesign.batterFlavor !== flavor;
   batterFlavor = flavor;
   frostingFlavor = flavor;
   cupcakeDesign.batterFlavor = flavor;
@@ -794,10 +1018,12 @@ function selectBatterFlavor(flavor) {
   updateBatterFlavorUi();
   updateCupcakePreviews();
   updateFrostingFlavorButtons();
+  if (flavorChanged) playSoundEffect("whoosh", QUIET_WHOOSH_VOLUME);
 }
 
 function dispenseBatter() {
   if (trayCupsFilled >= 4) return;
+  playSoundEffect("dispense");
   batterDispenser.classList.add("has-dispensed");
   trayCupsFilled += 1;
   projectTray.querySelector(`[data-tray-cup="${trayCupsFilled}"]`)?.classList.add("is-filled");
@@ -812,6 +1038,9 @@ function dispenseBatter() {
 
 function openBakingInteraction() {
   if (bakingTimer) window.clearTimeout(bakingTimer);
+  window.clearTimeout(ovenBellTimer);
+  ovenBellTimer = null;
+  stopBakingNoise();
   bakingTimer = null;
   bakingStage = "ready";
   const [batterColor, batterEdge, bakedColor] = BATTER_COLORS[batterFlavor] ?? BATTER_COLORS.strawberry;
@@ -826,14 +1055,18 @@ function openBakingInteraction() {
 
 function useOven() {
   if (bakingStage === "ready") {
+    playSoundEffect("plop");
+    prepareOvenBell();
     bakingStage = "baking";
     bakingInteraction.classList.add("is-baking");
     bakingFeedback.textContent = "The project cupcakes are baking...";
     ovenActionButton.disabled = true;
     ovenActionButton.textContent = "Baking...";
+    playBakingNoise();
     const bakingDuration = REDUCED_MOTION.matches ? 350 : 1500;
     bakingTimer = window.setTimeout(() => {
       bakingTimer = null;
+      finishBakingSound();
       bakingStage = "baked";
       bakingInteraction.classList.remove("is-baking");
       bakingInteraction.classList.add("is-baked");
@@ -845,6 +1078,7 @@ function useOven() {
   }
 
   if (bakingStage === "baked") {
+    playSoundEffect("whoosh", QUIET_WHOOSH_VOLUME);
     bakingStage = "complete";
     bakingInteraction.classList.remove("is-baked");
     bakingInteraction.classList.add("is-complete");
@@ -874,6 +1108,7 @@ function collectIngredient(button) {
   const step = CUPCAKE_STEPS[activeDialogStepIndex ?? currentStepIndex];
   const ingredient = step?.ingredientItems?.find((item) => item.id === button.dataset.ingredientId);
   if (!ingredient) return;
+  playSoundEffect("whoosh");
   collectedIngredients.add(ingredient.id);
   button.classList.add("is-collected");
   button.setAttribute("aria-pressed", "true");
@@ -910,10 +1145,12 @@ function updateSprinkleToggle() {
 }
 
 function updateCupcakePreviews() {
-  [cupcakePlaceholder, decoratingCupcake].forEach(applyCupcakeDesign);
+  [cupcakePlaceholder, decoratingCupcake, editorCupcakePreview].forEach(applyCupcakeDesign);
+  updateCupcakeEditorSummary();
 }
 
 function applyCupcakeDesign(target) {
+  if (!target) return;
   const [fill, border, shadow] = FROSTING_COLORS[cupcakeDesign.frostingFlavor] ?? FROSTING_COLORS.strawberry;
   const [, batterEdge, bakedColor] = BATTER_COLORS[cupcakeDesign.batterFlavor] ?? BATTER_COLORS.strawberry;
   target.style.setProperty("--frosting-color", fill);
@@ -925,17 +1162,45 @@ function applyCupcakeDesign(target) {
   target.dataset.decoration = cupcakeDesign.decoration;
 }
 
+function choiceLabel(value) {
+  if (value === "none") return "No topper";
+  return `${value.charAt(0).toUpperCase()}${value.slice(1)}`;
+}
+
+function updateCupcakeEditorSummary() {
+  const summary = [
+    `${choiceLabel(cupcakeDesign.batterFlavor)} batter`,
+    `${choiceLabel(cupcakeDesign.frostingFlavor)} frosting`,
+    choiceLabel(cupcakeDesign.decoration),
+    `${choiceLabel(cupcakeDesign.bowColor)} ribbon`,
+  ].join(" · ");
+  cupcakeEditorSummary.textContent = summary;
+  cupcakeSummaryCompact.textContent = summary;
+}
+
+function openCupcakeEditor() {
+  updateCupcakePreviews();
+  updateBatterFlavorUi();
+  updateFrostingFlavorButtons();
+  updateBowPicker();
+  updateChoiceButtons(document.querySelectorAll("[data-decoration]"), "decoration", cupcakeDesign.decoration);
+  openDialog(cupcakeEditorDialog, cupcakeEditorDone);
+}
+
 function selectFrostingFlavor(flavor) {
   if (!FROSTING_COLORS[flavor]) return;
+  const flavorChanged = cupcakeDesign.frostingFlavor !== flavor;
   frostingFlavor = flavor;
   cupcakeDesign.frostingFlavor = flavor;
   saveCupcakeDesign();
   updateCupcakePreviews();
   updateFrostingFlavorButtons();
+  if (flavorChanged) playSoundEffect("whoosh", QUIET_WHOOSH_VOLUME);
 }
 
 function toggleSprinkles() {
   sprinklesEnabled = !sprinklesEnabled;
+  if (sprinklesEnabled) playSoundEffect("sprinkles");
   cupcakeDesign.sprinkles = sprinklesEnabled;
   saveCupcakeDesign();
   updateCupcakePreviews();
@@ -944,17 +1209,19 @@ function toggleSprinkles() {
 }
 
 function renderDecorationInteraction() {
-  applyCupcakeDesign(decoratingCupcake);
-  updateChoiceButtons(decorationOptions.querySelectorAll("[data-decoration]"), "decoration", cupcakeDesign.decoration);
+  updateCupcakePreviews();
+  updateChoiceButtons(document.querySelectorAll("[data-decoration]"), "decoration", cupcakeDesign.decoration);
   decorationFeedback.textContent = cupcakeDesign.decoration === "none" ? "Pick a decoration to continue." : "Your cupcake is ready for its close-up!";
 }
 
-function selectDecoration(decoration) {
+function selectDecoration(decoration, unlockStep = true) {
   if (!DECORATION_OPTIONS.has(decoration)) return;
+  const decorationChanged = cupcakeDesign.decoration !== decoration;
   cupcakeDesign.decoration = decoration;
   saveCupcakeDesign();
   renderDecorationInteraction();
-  continueButton.disabled = false;
+  if (decorationChanged) playSoundEffect("whoosh", QUIET_WHOOSH_VOLUME);
+  if (unlockStep) continueButton.disabled = false;
 }
 
 function openPackagingInteraction() {
@@ -979,6 +1246,7 @@ function updateBowPicker() {
   packagingInteraction.style.setProperty("--bow-color", bowColor);
   ribbonPreview.style.setProperty("--bow-color", bowColor);
   updateChoiceButtons(bowColorButtons, "bowColor", cupcakeDesign.bowColor);
+  updateCupcakeEditorSummary();
 }
 
 function showRibbonPreview() {
@@ -996,16 +1264,19 @@ function hideRibbonPreview() {
   }, 220);
 }
 
-function selectBowColor(color) {
+function selectBowColor(color, showPreview = true) {
   if (!BOW_COLORS[color]) return;
+  const colorChanged = cupcakeDesign.bowColor !== color;
   cupcakeDesign.bowColor = color;
   saveCupcakeDesign();
   updateBowPicker();
-  showRibbonPreview();
+  if (showPreview) showRibbonPreview();
+  if (colorChanged) playSoundEffect("whoosh", QUIET_WHOOSH_VOLUME);
 }
 
 function packageCupcakes() {
   if (packagingStage === "ready") {
+    playSoundEffect("packageBox");
     packagingStage = "packed";
     packagingInteraction.classList.add("is-packed");
     packagingFeedback.textContent = "The box is closed. Tie the bow to finish it.";
@@ -1029,17 +1300,32 @@ function openServingInteraction() {
   if (servingTimer) window.clearTimeout(servingTimer);
   servingTimer = null;
   servingStage = "ready";
+  finishQuestReminder.hidden = true;
   servingInteraction.style.setProperty("--bow-color", BOW_COLORS[cupcakeDesign.bowColor] ?? BOW_COLORS.berry);
   const playerName = characterChoice.name.trim();
   customerSpeech.textContent = playerName ? `Thank you, ${playerName}!` : "Thank you!";
   servingInteraction.classList.remove("is-delivering", "is-delivered");
   servingFeedback.textContent = "The customer is waiting for their order.";
   serveActionButton.disabled = false;
+  serveActionButton.removeAttribute("aria-disabled");
   serveActionButton.textContent = "Send Order Down the Belt";
 }
 
+function shouldRemindFinishQuest() {
+  return !reviewMode && activeDialogStepIndex === CUPCAKE_STEPS.length - 1 && servingStage === "complete";
+}
+
+function showFinishQuestReminder() {
+  finishQuestReminder.hidden = false;
+}
+
 function serveOrder() {
+  if (servingStage === "complete") {
+    if (shouldRemindFinishQuest()) showFinishQuestReminder();
+    return;
+  }
   if (servingStage !== "ready") return;
+  playSoundEffect("plop");
   servingStage = "delivering";
   servingInteraction.classList.add("is-delivering");
   servingFeedback.textContent = "The finished project box is on its way...";
@@ -1051,7 +1337,12 @@ function serveOrder() {
     servingStage = "complete";
     servingInteraction.classList.remove("is-delivering");
     servingInteraction.classList.add("is-delivered");
+    const playerName = characterChoice.name.trim();
+    customerSpeech.textContent = playerName ? `Ooh, yummy! Thank you, ${playerName}!` : "Ooh, yummy! Thank you!";
+    playSoundEffect("eating");
     servingFeedback.textContent = "Order delivered! The customer is ready to connect.";
+    serveActionButton.disabled = false;
+    serveActionButton.setAttribute("aria-disabled", "true");
     serveActionButton.textContent = "Order Delivered";
     continueButton.disabled = false;
   }, servingDuration);
@@ -1096,6 +1387,7 @@ function advanceQuest() {
   if (pendingStepIndex !== currentStepIndex) return;
   closeDialog(recipeDialog);
   currentStepIndex += 1;
+  playSoundEffect("levelUp");
   pendingStepIndex = null;
   saveProgress();
   renderProgress();
@@ -1118,6 +1410,7 @@ function skipCurrentStep() {
   closeDialog(recipeDialog);
   closeDialog(frostingDialog);
   currentStepIndex += 1;
+  playSoundEffect("levelUp");
   saveProgress();
   renderProgress();
   highlightStation();
@@ -1140,12 +1433,14 @@ function frostCupcake() {
     openRecipeCard(completedReview ? completedStepIndex : currentStepIndex, { review: completedReview });
     return;
   }
+  playSoundEffect("plop");
   frostingTaps += 1;
   const feedback = ["First swirl!", "Looking sweet!", "Perfectly frosted!"][frostingTaps - 1];
   frostingFeedback.textContent = feedback;
   frostingMeterFill.style.width = `${frostingTaps * 33.333}%`;
   cupcakePlaceholder.querySelector(`.swirl-${["one", "two", "three"][frostingTaps - 1]}`)?.classList.add("is-visible");
   if (frostingTaps === 3) {
+    playSoundEffect("shine");
     frostingFeedback.textContent = "Perfectly frosted! Add sprinkles if you like.";
     sprinkleToggle.hidden = false;
     frostButton.textContent = "Finish Frosting";
@@ -1159,7 +1454,12 @@ function resetQuest() {
 }
 
 function showHome() {
-  [recipeDialog, frostingDialog, completionDialog, characterDialog].forEach((dialog) => {
+  if (bakingTimer) window.clearTimeout(bakingTimer);
+  bakingTimer = null;
+  window.clearTimeout(ovenBellTimer);
+  ovenBellTimer = null;
+  stopBakingNoise();
+  [recipeDialog, frostingDialog, cupcakeEditorDialog, completionDialog, characterDialog].forEach((dialog) => {
     if (dialog.open) dialog.close();
   });
   gamePaused = true;
@@ -1183,19 +1483,25 @@ function setupCharacterUi() {
   characterOptions.addEventListener("click", (event) => {
     const swatch = event.target.closest("button[data-character-type]");
     if (!swatch) return;
+    const choiceChanged = draftCharacter[swatch.dataset.characterType] !== swatch.dataset.characterValue;
     draftCharacter[swatch.dataset.characterType] = swatch.dataset.characterValue;
     renderCharacterPreview();
+    if (choiceChanged) playSoundEffect("whoosh", QUIET_WHOOSH_VOLUME);
   });
   defaultCharacter.addEventListener("click", () => {
+    const choiceChanged = Object.keys(DEFAULT_CHARACTER).some((key) => draftCharacter[key] !== DEFAULT_CHARACTER[key]);
     characterChoice = { ...DEFAULT_CHARACTER };
     draftCharacter = { ...characterChoice };
     saveCharacterChoice();
     renderCharacterPreview();
+    updatePlayerAppearance();
+    if (choiceChanged) playSoundEffect("whoosh", QUIET_WHOOSH_VOLUME);
   });
   saveCharacter.addEventListener("click", () => {
     characterChoice = { ...draftCharacter };
     saveCharacterChoice();
-    if (playerParts) playerParts.outfit.color = k.Color.fromHex(selectedColor("shirt", characterChoice.shirt));
+    updatePlayerAppearance();
+    playSoundEffect("shine");
     characterDialog.close();
   });
 }
@@ -1215,12 +1521,29 @@ function setupUiEvents() {
     const reviewButton = event.target.closest("button[data-review-step]");
     if (reviewButton) replayCompletedStep(Number(reviewButton.dataset.reviewStep));
   });
+  trackerPanel.addEventListener("click", (event) => {
+    if (event.target.closest("button, a")) return;
+    if (CUPCAKE_STEPS[currentStepIndex]?.id === "baking") {
+      showToast("Close Recipe Progress, then click the Baking station.");
+    }
+  });
+  editCupcakeButton.addEventListener("click", openCupcakeEditor);
+  cupcakeEditorDone.addEventListener("click", () => closeDialog(cupcakeEditorDialog));
+  editorDecorationOptions.addEventListener("click", (event) => {
+    const button = event.target.closest("button[data-decoration]");
+    if (button) selectDecoration(button.dataset.decoration, false);
+  });
   continueButton.addEventListener("click", advanceQuest);
   previousStepButton.addEventListener("click", () => openPreviousStep(recipeDialog));
   previousFrostingButton.addEventListener("click", () => openPreviousStep(frostingDialog));
   skipButton.addEventListener("click", skipCurrentStep);
   recipeDialog.addEventListener("click", (event) => {
-    if (event.target === recipeDialog) closeDialog(recipeDialog);
+    if (event.target !== recipeDialog) return;
+    if (shouldRemindFinishQuest()) showFinishQuestReminder();
+    else closeDialog(recipeDialog);
+  });
+  finishQuestReminderClose.addEventListener("click", () => {
+    finishQuestReminder.hidden = true;
   });
   ingredientGrid.addEventListener("click", (event) => {
     const button = event.target.closest("button[data-ingredient-id]");
@@ -1230,7 +1553,7 @@ function setupUiEvents() {
     const button = event.target.closest("button[data-decoration]");
     if (button) selectDecoration(button.dataset.decoration);
   });
-  bowColorButtons.forEach((button) => button.addEventListener("click", () => selectBowColor(button.dataset.bowColor)));
+  bowColorButtons.forEach((button) => button.addEventListener("click", () => selectBowColor(button.dataset.bowColor, !cupcakeEditorDialog.contains(button))));
   packageActionButton.addEventListener("click", packageCupcakes);
   serveActionButton.addEventListener("click", serveOrder);
   batterFlavorButtons.forEach((button) => button.addEventListener("click", () => selectBatterFlavor(button.dataset.batterFlavor)));
@@ -1307,6 +1630,7 @@ function setupUiEvents() {
 
 function showGameScreen() {
   gameShell.classList.add("is-playing");
+  updateCupcakeEditorSummary();
   welcomePanel.classList.add("is-hidden");
   gameHint.classList.add("is-visible");
   questPanel.classList.add("is-visible");
@@ -1314,11 +1638,35 @@ function showGameScreen() {
   trackerToggle.classList.toggle("is-visible", MOBILE_LAYOUT.matches);
 }
 
+function showEntryChoice() {
+  if (entryChoiceShown) return;
+  entryChoiceShown = true;
+  window.setTimeout(() => openDialog(entryChoiceDialog, playGameChoice), 180);
+}
+
+function showQuickLinksGuide() {
+  gamePaused = true;
+  quickLinksGuide.hidden = false;
+  quickLinksGuide.classList.add("is-visible");
+  quickNav.classList.add("is-guided", "is-tour-active");
+  window.requestAnimationFrame(() => quickLinksGotIt.focus());
+}
+
+function hideQuickLinksGuide({ resumeGame = true } = {}) {
+  if (quickLinksGuide.hidden) return;
+  quickLinksGuide.classList.remove("is-visible");
+  quickNav.classList.remove("is-guided", "is-tour-active");
+  quickLinksGuide.hidden = true;
+  if (resumeGame && gameStarted) gamePaused = false;
+}
+
 function startGame() {
   playBackgroundMusic();
+  playSoundEffect("whoosh", QUIET_WHOOSH_VOLUME);
   if (gameStarted) {
     showGameScreen();
     gamePaused = false;
+    showEntryChoice();
     return;
   }
   gameStarted = true;
@@ -1348,38 +1696,54 @@ function startGame() {
       updateStationIconHover();
       if (gamePaused || !player) return;
       const movementRequested = Boolean(player.destination);
+      let arrivedAtDestination = false;
       if (player.destination) {
         const distance = player.pos.dist(player.destination);
         if (distance >= 4) {
           player.moveTo(player.destination, player.speed);
           player.pos.x = clamp(player.pos.x, 70, GAME_WIDTH - 70);
           player.pos.y = clamp(player.pos.y, 170, GAME_HEIGHT - 112);
-          playerParts.hair.pos = player.pos.add(k.vec2(0, characterChoice.style === "girl" ? -7 : -6));
-          playerParts.outfit.pos = player.pos.add(k.vec2(0, 16));
-          playerParts.leftEye.pos = player.pos.add(k.vec2(-6, -3));
-          playerParts.rightEye.pos = player.pos.add(k.vec2(6, -3));
-          if (playerParts.nameLabel) playerParts.nameLabel.pos = player.pos.add(k.vec2(0, -40));
+          positionPlayerParts();
         } else {
           player.destination = null;
+          arrivedAtDestination = true;
         }
       }
 
-      if (!movementRequested) return;
+      if (!movementRequested || !arrivedAtDestination) return;
       const nearestStation = stationEntries.find(([, position]) => player.pos.dist(position) < 58)?.[0] ?? null;
-      if (nearestStation === insideStationId && !movementRequested) return;
-      insideStationId = nearestStation;
-      if (!nearestStation || !movementRequested || freeExplore) return;
       const activeStep = CUPCAKE_STEPS[currentStepIndex];
+      if (!nearestStation) {
+        if (activeStep?.id === "baking" && trackerPanel.classList.contains("is-visible")) {
+          showToast("Close Recipe Progress, then click the Baking station.");
+        }
+        return;
+      }
+      if (freeExplore) return;
       if (activeStep?.stationId === nearestStation) openCurrentStation();
       else showToast(`Wrong station. Click on "${activeStep.station}" to progress.`);
     });
   });
   k.go("bakery");
+  showEntryChoice();
 }
 
 startButton.addEventListener("click", startGame);
-soundToggle.addEventListener("click", toggleBackgroundMusic);
-homeButton.addEventListener("click", showHome);
+soundToggle.addEventListener("click", () => {
+  if (soundControlsExpanded) toggleBackgroundMusic();
+  else setSoundControlsExpanded(true);
+});
+volumeDown.addEventListener("click", () => adjustBackgroundVolume(-0.1));
+volumeUp.addEventListener("click", () => adjustBackgroundVolume(0.1));
+document.addEventListener("click", (event) => {
+  if (soundControlsExpanded && !soundControls.contains(event.target)) setSoundControlsExpanded(false);
+});
+document.addEventListener("pointerdown", unlockBackgroundMusic, true);
+document.addEventListener("keydown", unlockBackgroundMusic, true);
+homeButton.addEventListener("click", () => {
+  hideQuickLinksGuide({ resumeGame: false });
+  showHome();
+});
 objectiveHelp.addEventListener("click", () => objectiveDialog.showModal());
 openGuideButton.addEventListener("click", () => openGuideDialog.showModal());
 openGuideCustomize.addEventListener("click", () => {
@@ -1390,13 +1754,34 @@ openGuideEnter.addEventListener("click", () => {
   openGuideDialog.close();
   startGame();
 });
+playGameChoice.addEventListener("click", () => {
+  playSoundEffect("gameStart");
+  closeDialog(entryChoiceDialog);
+});
+quickLinksChoice.addEventListener("click", () => {
+  playSoundEffect("quickLinks");
+  closeDialog(entryChoiceDialog);
+  showQuickLinksGuide();
+});
+quickLinksGuideClose.addEventListener("click", () => hideQuickLinksGuide());
+quickLinksGotIt.addEventListener("click", () => hideQuickLinksGuide());
+quickLinksGuide.addEventListener("click", (event) => {
+  if (event.target === quickLinksGuide) hideQuickLinksGuide();
+});
+quickNav.addEventListener("click", (event) => {
+  if (event.target.closest("a")) hideQuickLinksGuide();
+});
 
 document.querySelectorAll(".dialog-close").forEach((closeButton) => closeButton.addEventListener("click", (event) => {
   event.preventDefault();
   event.stopPropagation();
   const dialog = closeButton.closest("dialog");
   if (!dialog?.open) return;
-  if (dialog === recipeDialog || dialog === frostingDialog) closeDialog(dialog);
+  if (dialog === recipeDialog && shouldRemindFinishQuest()) {
+    showFinishQuestReminder();
+    return;
+  }
+  if (dialog === recipeDialog || dialog === frostingDialog || dialog === cupcakeEditorDialog) closeDialog(dialog);
   else dialog.close();
 }));
 objectiveDialog.addEventListener("click", (event) => {
@@ -1404,6 +1789,14 @@ objectiveDialog.addEventListener("click", (event) => {
 });
 openGuideDialog.addEventListener("click", (event) => {
   if (event.target === openGuideDialog) openGuideDialog.close();
+});
+entryChoiceDialog.addEventListener("cancel", (event) => {
+  event.preventDefault();
+  closeDialog(entryChoiceDialog);
+});
+cupcakeEditorDialog.addEventListener("cancel", (event) => {
+  event.preventDefault();
+  closeDialog(cupcakeEditorDialog);
 });
 
 function emitCursorSprinkle(x, y) {
@@ -1445,9 +1838,18 @@ if (FINE_POINTER.matches) {
   document.documentElement.addEventListener("mouseleave", () => customPixelCursor.classList.remove("is-visible"));
 }
 setupCharacterUi();
+Object.values(soundEffects).forEach(({ audio }) => {
+  audio.preload = "auto";
+});
+batterMixSound.preload = "auto";
+bakingNoise.preload = "auto";
+bakingNoise.loop = true;
 backgroundMusic.src = backgroundMusicUrl;
-backgroundMusic.volume = 0.2;
+backgroundMusic.volume = musicVolume;
+backgroundMusic.loop = true;
+backgroundMusic.load();
 updateSoundToggle();
+playBackgroundMusic();
 renderProgress();
 drawBakery();
 highlightStation();

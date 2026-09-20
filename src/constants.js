@@ -48,11 +48,11 @@ export const CUPCAKE_STEPS = [
   {
     id: "tray",
     number: 3,
-    station: "Tray",
+    station: "Assembly",
     stationId: "displayCase",
     questLabel: "Fill the Cupcake Tray",
     portfolioSection: "Projects",
-    instruction: "Visit the cupcake tray.",
+    instruction: "Visit the assembly station.",
     completionMessage: "The tray is filled with ideas worth exploring.",
     content: "Add your projects, technologies, and live demos here.",
     link: null,

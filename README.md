@@ -24,6 +24,25 @@ npm run preview
 - `src/kaboomCtx.js` configures Kaboom.
 - `src/utils.js` contains shared scene helpers.
 
-## Attribution
+## Credits
 
-The project architecture was informed by [2d-portfolio-kaboom](https://github.com/JSLegendDev/2d-portfolio-kaboom) by JSLegendDev. Background music is provided by the included `maksymmalko-funny-cartoon-music-532611.mp3` file; confirm its license and required creator credit before publishing.
+The project structure was informed by [2d-portfolio-kaboom](https://github.com/JSLegendDev/2d-portfolio-kaboom) by JSLegendDev.
+
+| Use | Track | Creator |
+| --- | --- | --- |
+| Background music | Funny Cartoon Music | Maksym Malko |
+| Placement | Water Splash | Freesound Community |
+| Ingredient and option selection | Simple Whoosh | Dragon Studio |
+| Game start | 8-Bit Arcade Video Game Start Sound Effect | Freesound Community |
+| Quick Links | Cartoon Impact 02 | Universfield |
+| Frosting and character completion | Shine | Faith Mulato |
+| Sprinkles | Salt Shaking | Freesound Community |
+| Packing | Placing Cardboard Box | Oxidvideos |
+| Customer delivery | Cartoon Eating Sound Effect | Betoelguapillo |
+| Batter dispenser | Bubble Pop 06 | Universfield |
+| Batter mixing | Slimy | Freesound Community |
+| Station completion | Level Up 05 | Universfield |
+| Baking | White Noise | Danevaer |
+| Oven timer | Bell Ring | Dragon Studio |
+
+Audio files are stored in `audio/`.

@@ -13,8 +13,7 @@
   <body>
     <main id="game-shell" aria-label="Tanvi's Code Bakery interactive portfolio">
       <canvas id="game-canvas"></canvas>
-      <audio id="background-music" loop preload="metadata"></audio>
-      <button class="sound-toggle" id="sound-toggle" type="button" aria-pressed="true" aria-label="Mute background music">♫ Music On</button>
+      <audio id="background-music" autoplay loop preload="auto" playsinline></audio>
 
       <section class="welcome-panel" id="welcome-panel" aria-labelledby="welcome-title">
         <button class="panel-stamp" id="open-guide" type="button" aria-label="Open the bakery welcome guide">OPEN</button>
@@ -33,7 +32,7 @@
         </div>
         <button class="customize-button" id="customize-button" type="button">Customize character</button>
         <button class="start-button" id="start-button" type="button">Enter the bakery <span class="start-arrow" aria-hidden="true">→</span></button>
-        <p class="panel-note">Enjoy exploring my bakery :)</p>
+        <p class="panel-note">Hi! I'm Tanvi and I love to bake. Have fun exploring my bakery :)</p>
       </section>
 
       <dialog class="objective-dialog" id="objective-dialog" aria-labelledby="objective-title">
@@ -54,6 +53,18 @@
           <div class="open-guide-actions">
             <button class="customize-button" id="open-guide-customize" type="button">Customize character</button>
             <button class="start-button" id="open-guide-enter" type="button">Enter the bakery <span class="start-arrow" aria-hidden="true">→</span></button>
+          </div>
+        </div>
+      </dialog>
+
+      <dialog class="objective-dialog entry-choice-dialog" id="entry-choice-dialog" aria-labelledby="entry-choice-title">
+        <div class="objective-paper entry-choice-paper">
+          <p class="dialog-kicker">CHOOSE YOUR ROUTE</p>
+          <h2 id="entry-choice-title">How would you like to explore?</h2>
+          <p>Play the bakery quest, or use the navigation bar for quick access to projects, skills, résumé, GitHub, and contact.</p>
+          <div class="entry-choice-actions">
+            <button class="start-button" id="play-game-choice" type="button">Play the Game</button>
+            <button class="default-button" id="quick-links-choice" type="button">Use Quick Links</button>
           </div>
         </div>
       </dialog>
@@ -86,6 +97,16 @@
         <a href="#contact">Contact</a>
       </nav>
 
+      <div class="quick-links-guide" id="quick-links-guide" hidden>
+        <span class="quick-links-pointer" aria-hidden="true"></span>
+        <aside class="quick-links-tip" aria-labelledby="quick-links-tip-title">
+          <button id="quick-links-guide-close" type="button" aria-label="Close quick links guide">×</button>
+          <strong id="quick-links-tip-title">Use the Quick Links</strong>
+          <p>Jump straight to Tanvi’s projects, skills, résumé, GitHub, or contact details without completing every bakery step.</p>
+          <button class="quick-links-got-it" id="quick-links-got-it" type="button">Got It</button>
+        </aside>
+      </div>
+
       <section class="quest-card" id="quest-panel" aria-live="polite">
         <div class="quest-card-heading">
           <p class="quest-kicker">Cupcake quest</p>
@@ -97,18 +118,78 @@
         <div class="quest-progress" id="quest-progress" aria-label="Cupcake progress"></div>
       </section>
 
-      <button class="tracker-toggle" id="tracker-toggle" type="button" aria-expanded="false" aria-controls="tracker-panel">Recipe Progress <span id="tracker-count">1/8</span></button>
+      <div class="tracker-stack">
+        <button class="tracker-toggle" id="tracker-toggle" type="button" aria-expanded="false" aria-controls="tracker-panel">Recipe Progress <span id="tracker-count">1/8</span></button>
 
-      <aside class="tracker-panel" id="tracker-panel" aria-label="Cupcake quest progress">
-        <div class="tracker-heading">
-          <div><p class="quest-kicker">Bakery order ticket</p><strong>Recipe progress</strong></div>
-          <button class="icon-button" id="tracker-close" type="button" aria-label="Close recipe progress">×</button>
+        <aside class="tracker-panel" id="tracker-panel" aria-label="Cupcake quest progress">
+          <div class="tracker-heading">
+            <div><p class="quest-kicker">Bakery order ticket</p><strong>Recipe progress</strong></div>
+            <button class="icon-button" id="tracker-close" type="button" aria-label="Close recipe progress">×</button>
+          </div>
+          <div class="tracker-list" id="tracker-list"></div>
+          <button class="reset-button" id="reset-button" type="button">Replay from Start</button>
+        </aside>
+
+        <button class="edit-cupcake-button" id="edit-cupcake-button" type="button">
+          <strong>Edit Cupcake</strong>
+          <span id="cupcake-summary-compact">Strawberry batter · Strawberry frosting · No topper · Berry ribbon</span>
+        </button>
+
+        <div class="sound-controls" aria-label="Background music controls">
+          <button id="volume-down" type="button" aria-label="Decrease music volume">−</button>
+          <button class="sound-toggle" id="sound-toggle" type="button" aria-pressed="true" aria-expanded="false" aria-label="Show music controls">♫ 25%</button>
+          <button id="volume-up" type="button" aria-label="Increase music volume">+</button>
         </div>
-        <div class="tracker-list" id="tracker-list"></div>
-        <button class="reset-button" id="reset-button" type="button">Replay from Start</button>
-      </aside>
+      </div>
 
       <div class="confetti-layer" id="confetti-layer" aria-hidden="true"></div>
+
+      <dialog class="recipe-dialog cupcake-editor-dialog" id="cupcake-editor-dialog" aria-labelledby="cupcake-editor-title">
+        <div class="dialog-paper cupcake-editor-paper">
+          <button class="dialog-close" type="button" aria-label="Close cupcake editor">×</button>
+          <p class="dialog-kicker">YOUR CUPCAKE</p>
+          <h2 id="cupcake-editor-title">Edit Cupcake</h2>
+          <p class="cupcake-editor-summary" id="cupcake-editor-summary"></p>
+          <div class="cupcake-placeholder editor-cupcake" id="editor-cupcake-preview" data-decoration="none" aria-label="Cupcake preview">
+            <span class="cupcake-wrapper"></span><span class="cupcake-top"></span><span class="frosting-swirl swirl-one is-visible"></span><span class="frosting-swirl swirl-two is-visible"></span><span class="frosting-swirl swirl-three is-visible"></span><span class="cupcake-decoration" aria-hidden="true"></span>
+          </div>
+          <div class="cupcake-editor-grid">
+            <fieldset class="cupcake-editor-group">
+              <legend>Batter</legend>
+              <div>
+                <button type="button" data-batter-flavor="chocolate"><span class="batter-swatch batter-chocolate" aria-hidden="true"></span>Chocolate</button>
+                <button type="button" data-batter-flavor="vanilla"><span class="batter-swatch batter-vanilla" aria-hidden="true"></span>Vanilla</button>
+                <button type="button" data-batter-flavor="strawberry"><span class="batter-swatch batter-strawberry" aria-hidden="true"></span>Strawberry</button>
+              </div>
+            </fieldset>
+            <fieldset class="cupcake-editor-group">
+              <legend>Frosting</legend>
+              <div>
+                <button type="button" data-frosting-flavor="chocolate"><span class="flavor-swatch flavor-chocolate" aria-hidden="true"></span>Chocolate</button>
+                <button type="button" data-frosting-flavor="vanilla"><span class="flavor-swatch flavor-vanilla" aria-hidden="true"></span>Vanilla</button>
+                <button type="button" data-frosting-flavor="strawberry"><span class="flavor-swatch flavor-strawberry" aria-hidden="true"></span>Strawberry</button>
+              </div>
+            </fieldset>
+            <fieldset class="cupcake-editor-group">
+              <legend>Decoration</legend>
+              <div id="editor-decoration-options">
+                <button type="button" data-decoration="cherry">Cherry</button>
+                <button type="button" data-decoration="candle">Candle</button>
+                <button type="button" data-decoration="heart">Heart</button>
+              </div>
+            </fieldset>
+            <fieldset class="cupcake-editor-group">
+              <legend>Ribbon</legend>
+              <div>
+                <button type="button" data-bow-color="berry"><span class="bow-swatch bow-berry" aria-hidden="true"></span>Berry</button>
+                <button type="button" data-bow-color="sage"><span class="bow-swatch bow-sage" aria-hidden="true"></span>Sage</button>
+                <button type="button" data-bow-color="gold"><span class="bow-swatch bow-gold" aria-hidden="true"></span>Gold</button>
+              </div>
+            </fieldset>
+          </div>
+          <button class="continue-button cupcake-editor-done" id="cupcake-editor-done" type="button">Save Choices</button>
+        </div>
+      </dialog>
 
       <dialog class="recipe-dialog" id="recipe-dialog" aria-labelledby="recipe-title">
         <div class="dialog-paper">
@@ -201,6 +282,7 @@
                 <span class="package-bow bow-left"></span><span class="package-bow bow-right"></span><span class="package-bow-knot"></span>
               </div>
               <div class="ribbon-preview" id="ribbon-preview" hidden>
+                <small>PREVIEW</small>
                 <span class="ribbon-preview-box"><i></i></span>
               </div>
             </div>
@@ -226,6 +308,11 @@
           <div class="technology-tags" id="technology-tags"></div>
           <a class="dialog-link" id="recipe-link" href="#" target="_blank" rel="noreferrer">Open portfolio link</a>
           <button class="continue-button" id="continue-button" type="button">Continue Quest <span aria-hidden="true">→</span></button>
+          <div class="finish-quest-reminder" id="finish-quest-reminder" role="status" hidden>
+            <button id="finish-quest-reminder-close" type="button" aria-label="Close reminder">×</button>
+            <strong>Almost finished!</strong>
+            <span>Click Finish Quest to move on.</span>
+          </div>
           <div class="step-navigation">
             <button class="previous-step-button" id="previous-step-button" type="button"><span aria-hidden="true">←</span> Previous Step</button>
             <button class="skip-button" id="skip-button" type="button">Skip Step <span aria-hidden="true">→</span></button>
