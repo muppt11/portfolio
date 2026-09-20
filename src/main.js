@@ -1981,11 +1981,7 @@ function startGame() {
       }
     };
 
-    k.onMouseDown((button) => {
-      if (button === "left") setDestination();
-    });
-    k.onTouchStart(setDestination);
-    gameCanvas.addEventListener("pointerdown", setDestination, { passive: true });
+    k.onMousePress("left", setDestination);
 
     k.onUpdate(() => {
       updateStationIconHover();
