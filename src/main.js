@@ -65,7 +65,7 @@ const soundEffects = {
   shine: { audio: new Audio(sprinkleShineUrl), volume: 1 },
   sprinkles: { audio: new Audio(sprinkleShakeUrl), volume: 1, duration: 1500 },
   packageBox: { audio: new Audio(packageBoxUrl), volume: 1 },
-  bowWrap: { audio: new Audio(bowWrapUrl), volume: 1, duration: 2500 },
+  bowWrap: { audio: new Audio(bowWrapUrl), volume: 1, duration: 2500, startAt: 1.5, reuse: true },
   eating: { audio: new Audio(eatingSoundUrl), volume: 1 },
   ovenBell: { audio: new Audio(ovenBellUrl), volume: 1 },
   finishQuest: { audio: new Audio(finishQuestSoundUrl), volume: 1 },
@@ -430,8 +430,12 @@ function playSoundEffect(name, volumeOverride) {
   if (!musicEnabled) return;
   const effect = soundEffects[name];
   if (!effect) return;
-  const sound = effect.audio.cloneNode();
+  const sound = effect.reuse ? effect.audio : effect.audio.cloneNode();
   const defaultVolume = typeof effect.volume === "function" ? effect.volume() : effect.volume;
+  if (effect.reuse) {
+    sound.pause();
+    sound.currentTime = effect.startAt ?? 0;
+  }
   sound.volume = volumeOverride ?? defaultVolume;
   sound.play().catch(() => {});
   if (effect.duration) {
