@@ -38,6 +38,7 @@ const INTERFACE_CLICK_SELECTOR = [
   ".quick-nav button",
   ".quick-nav a",
   "#edit-cupcake-button",
+  "#decoration-options button",
   "#cupcake-editor-dialog button",
   "#volume-down",
   "#volume-up",
@@ -1399,12 +1400,10 @@ function renderDecorationInteraction() {
 
 function selectDecoration(decoration, unlockStep = true) {
   if (!DECORATION_OPTIONS.has(decoration)) return;
-  const decorationChanged = cupcakeDesign.decoration !== decoration;
   cupcakeDesign.decoration = decoration;
   cupcakeDesign.selections.decoration = true;
   saveCupcakeDesign();
   renderDecorationInteraction();
-  if (decorationChanged && unlockStep) playSoundEffect("whoosh", QUIET_WHOOSH_VOLUME);
   if (unlockStep) continueButton.disabled = false;
 }
 
