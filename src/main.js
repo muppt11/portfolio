@@ -43,6 +43,7 @@ const INTERFACE_CLICK_SELECTOR = [
   "#recipe-guide-done",
   "#edit-cupcake-guide-done",
   "#decoration-options button",
+  ".bow-picker button",
   "#cupcake-editor-dialog button",
   "#volume-down",
   "#volume-up",
@@ -1510,13 +1511,11 @@ function hideRibbonPreview() {
 
 function selectBowColor(color, showPreview = true) {
   if (!BOW_COLORS[color]) return;
-  const colorChanged = cupcakeDesign.bowColor !== color;
   cupcakeDesign.bowColor = color;
   cupcakeDesign.selections.ribbon = true;
   saveCupcakeDesign();
   updateBowPicker();
   if (showPreview) showRibbonPreview();
-  if (colorChanged && showPreview) playSoundEffect("whoosh", QUIET_WHOOSH_VOLUME);
 }
 
 function packageCupcakes() {
