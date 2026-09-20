@@ -46,6 +46,9 @@ const INTERFACE_CLICK_SELECTOR = [
   ".bow-picker button",
   ".frosting-picker button",
   "#cupcake-editor-dialog button",
+  "#completion-dialog button",
+  "#completion-dialog a",
+  "#reset-dialog button",
   "#volume-down",
   "#volume-up",
 ].join(",");
@@ -1983,7 +1986,10 @@ function setupUiEvents() {
   exploreButton.addEventListener("click", () => closeDialog(completionDialog));
   resetButton.addEventListener("click", requestReplay);
   completionReplay.addEventListener("click", requestReplay);
-  confirmReset.addEventListener("click", resetQuest);
+  confirmReset.addEventListener("click", (event) => {
+    event.preventDefault();
+    window.setTimeout(resetQuest, 140);
+  });
   [recipeDialog, frostingDialog, completionDialog].forEach((dialog) => dialog.addEventListener("cancel", (event) => {
     event.preventDefault();
     closeDialog(dialog);
