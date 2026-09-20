@@ -38,7 +38,7 @@ const soundEffects = {
   gameStart: { audio: new Audio(gameStartUrl), volume: 1 },
   quickLinks: { audio: new Audio(quickLinksImpactUrl), volume: 1 },
   shine: { audio: new Audio(sprinkleShineUrl), volume: 1 },
-  sprinkles: { audio: new Audio(sprinkleShakeUrl), volume: 1 },
+  sprinkles: { audio: new Audio(sprinkleShakeUrl), volume: 1, duration: 500 },
   packageBox: { audio: new Audio(packageBoxUrl), volume: 1 },
   eating: { audio: new Audio(eatingSoundUrl), volume: 1 },
   ovenBell: { audio: new Audio(ovenBellUrl), volume: 1 },
@@ -372,6 +372,12 @@ function playSoundEffect(name, volumeOverride) {
   const defaultVolume = typeof effect.volume === "function" ? effect.volume() : effect.volume;
   sound.volume = volumeOverride ?? defaultVolume;
   sound.play().catch(() => {});
+  if (effect.duration) {
+    window.setTimeout(() => {
+      sound.pause();
+      sound.currentTime = 0;
+    }, effect.duration);
+  }
 }
 
 function stopBatterMixSound() {
@@ -1213,9 +1219,35 @@ function selectFrostingFlavor(flavor) {
   if (flavorChanged) playSoundEffect("whoosh", QUIET_WHOOSH_VOLUME);
 }
 
+function showSprinkleShower() {
+  cupcakePlaceholder.querySelectorAll(".sprinkle-shower-piece").forEach((piece) => piece.remove());
+  if (REDUCED_MOTION.matches) return;
+  const shower = document.createDocumentFragment();
+  for (let index = 0; index < 24; index += 1) {
+    const sprinkle = document.createElement("span");
+    const duration = 480 + Math.random() * 280;
+    sprinkle.className = "sprinkle-shower-piece";
+    sprinkle.style.setProperty("--sprinkle-x", `${28 + Math.random() * 94}px`);
+    sprinkle.style.setProperty("--sprinkle-color", SPRINKLE_COLORS[index % SPRINKLE_COLORS.length]);
+    sprinkle.style.setProperty("--sprinkle-delay", `${Math.random() * 220}ms`);
+    sprinkle.style.setProperty("--sprinkle-duration", `${duration}ms`);
+    sprinkle.style.setProperty("--sprinkle-drift", `${Math.random() * 28 - 14}px`);
+    sprinkle.style.setProperty("--sprinkle-fall", `${58 + Math.random() * 28}px`);
+    sprinkle.style.setProperty("--sprinkle-turn", `${180 + Math.random() * 260}deg`);
+    sprinkle.addEventListener("animationend", () => sprinkle.remove(), { once: true });
+    shower.append(sprinkle);
+  }
+  cupcakePlaceholder.append(shower);
+}
+
 function toggleSprinkles() {
   sprinklesEnabled = !sprinklesEnabled;
-  if (sprinklesEnabled) playSoundEffect("sprinkles");
+  if (sprinklesEnabled) {
+    playSoundEffect("sprinkles");
+    showSprinkleShower();
+  } else {
+    cupcakePlaceholder.querySelectorAll(".sprinkle-shower-piece").forEach((piece) => piece.remove());
+  }
   cupcakeDesign.sprinkles = sprinklesEnabled;
   saveCupcakeDesign();
   updateCupcakePreviews();
