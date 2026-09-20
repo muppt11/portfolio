@@ -1656,7 +1656,7 @@ function advanceQuest() {
   } else {
     celebrateStep();
     if (completedStepId === "tray") window.setTimeout(showAssemblyCloseGuide, 220);
-    if (completedStepId === "frosting") window.setTimeout(showEditCupcakeGuide, 220);
+    if (completedStepId === "decorating") window.setTimeout(showEditCupcakeGuide, 220);
   }
 }
 
