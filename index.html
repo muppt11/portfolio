@@ -279,18 +279,18 @@
             <p class="tray-feedback" id="tray-feedback" aria-live="polite">4 project cups to fill.</p>
           </div>
           <div class="baking-interaction" id="baking-interaction" hidden>
-            <p class="interaction-instruction">Put the project cupcakes in the oven, let them bake, then take them out.</p>
+            <p class="interaction-instruction">Drag the tray into the oven or click the button. Let the cupcakes bake, then take them out.</p>
             <div class="baking-workspace" id="baking-workspace">
-              <div class="activity-oven" aria-label="Bakery oven">
+              <div class="activity-oven" id="activity-oven" aria-label="Bakery oven drop area">
                 <span class="oven-control control-one"></span><span class="oven-control control-two"></span>
                 <span class="oven-window"></span><span class="oven-rack"></span>
               </div>
-              <div class="oven-tray" id="oven-tray" aria-label="Tray of four project cupcakes">
+              <div class="oven-tray" id="oven-tray" role="button" tabindex="0" aria-label="Tray of four project cupcakes. Drag into the oven or press Enter.">
                 <span class="oven-cup"></span><span class="oven-cup"></span><span class="oven-cup"></span><span class="oven-cup"></span>
               </div>
             </div>
             <div class="bake-progress" aria-label="Baking progress"><span></span></div>
-            <p class="baking-feedback" id="baking-feedback" aria-live="polite">The filled tray is ready for the oven.</p>
+            <p class="baking-feedback" id="baking-feedback" aria-live="polite">Drag the filled tray into the oven or use the button.</p>
             <button class="oven-action-button" id="oven-action-button" type="button">Put Tray in Oven</button>
           </div>
           <div class="decorating-interaction" id="decorating-interaction" hidden>

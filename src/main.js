@@ -198,6 +198,9 @@ const batterDispenser = document.querySelector("#batter-dispenser");
 const projectTray = document.querySelector("#project-tray");
 const trayFeedback = document.querySelector("#tray-feedback");
 const bakingInteraction = document.querySelector("#baking-interaction");
+const bakingWorkspace = document.querySelector("#baking-workspace");
+const activityOven = document.querySelector("#activity-oven");
+const ovenTray = document.querySelector("#oven-tray");
 const bakingFeedback = document.querySelector("#baking-feedback");
 const ovenActionButton = document.querySelector("#oven-action-button");
 const decoratingInteraction = document.querySelector("#decorating-interaction");
@@ -272,6 +275,7 @@ let batterIngredientsAdded = new Set();
 let whiskMixes = 0;
 let trayCupsFilled = 0;
 let bakingStage = "ready";
+let ovenTrayDrag = null;
 let bakingTimer = null;
 let ovenBellTimer = null;
 let soundContext = null;
@@ -1022,6 +1026,7 @@ function openDialog(dialog, focusTarget) {
 
 function closeDialog(dialog) {
   if (dialog === recipeDialog) {
+    resetOvenTrayDrag();
     if (bakingTimer) window.clearTimeout(bakingTimer);
     bakingTimer = null;
     window.clearTimeout(ovenBellTimer);
@@ -1208,9 +1213,57 @@ function openBakingInteraction() {
   bakingInteraction.style.setProperty("--batter-edge", batterEdge);
   bakingInteraction.style.setProperty("--baked-color", bakedColor);
   bakingInteraction.classList.remove("is-baking", "is-baked", "is-complete");
-  bakingFeedback.textContent = "The filled tray is ready for the oven.";
+  resetOvenTrayDrag();
+  ovenTray.setAttribute("aria-disabled", "false");
+  bakingFeedback.textContent = "Drag the filled tray into the oven or use the button.";
   ovenActionButton.disabled = false;
   ovenActionButton.textContent = "Put Tray in Oven";
+}
+
+function resetOvenTrayDrag() {
+  ovenTrayDrag = null;
+  ovenTray.classList.remove("is-dragging");
+  activityOven.classList.remove("is-drop-target");
+  ovenTray.style.removeProperty("--drag-x");
+  ovenTray.style.removeProperty("--drag-y");
+}
+
+function pointIsOverOven(x, y) {
+  const ovenBounds = activityOven.getBoundingClientRect();
+  return x >= ovenBounds.left && x <= ovenBounds.right && y >= ovenBounds.top && y <= ovenBounds.bottom;
+}
+
+function startOvenTrayDrag(event) {
+  if (bakingStage !== "ready") return;
+  event.preventDefault();
+  ovenTrayDrag = {
+    pointerId: event.pointerId,
+    startX: event.clientX,
+    startY: event.clientY,
+    trayBounds: ovenTray.getBoundingClientRect(),
+    workspaceBounds: bakingWorkspace.getBoundingClientRect(),
+  };
+  ovenTray.classList.add("is-dragging");
+  ovenTray.setPointerCapture?.(event.pointerId);
+}
+
+function moveOvenTray(event) {
+  if (!ovenTrayDrag || event.pointerId !== ovenTrayDrag.pointerId) return;
+  event.preventDefault();
+  const { startX, startY, trayBounds, workspaceBounds } = ovenTrayDrag;
+  const dragX = clamp(event.clientX - startX, workspaceBounds.left - trayBounds.left, workspaceBounds.right - trayBounds.right);
+  const dragY = clamp(event.clientY - startY, workspaceBounds.top - trayBounds.top, workspaceBounds.bottom - trayBounds.bottom);
+  ovenTray.style.setProperty("--drag-x", `${dragX}px`);
+  ovenTray.style.setProperty("--drag-y", `${dragY}px`);
+  activityOven.classList.toggle("is-drop-target", pointIsOverOven(event.clientX, event.clientY));
+}
+
+function finishOvenTrayDrag(event) {
+  if (!ovenTrayDrag || event.pointerId !== ovenTrayDrag.pointerId) return;
+  const droppedInOven = pointIsOverOven(event.clientX, event.clientY);
+  resetOvenTrayDrag();
+  if (droppedInOven) useOven();
+  else bakingFeedback.textContent = "Drop the tray over the oven, or click Put Tray in Oven.";
 }
 
 function useOven() {
@@ -1218,6 +1271,7 @@ function useOven() {
     playSoundEffect("plop");
     prepareOvenBell();
     bakingStage = "baking";
+    ovenTray.setAttribute("aria-disabled", "true");
     bakingInteraction.classList.add("is-baking");
     bakingFeedback.textContent = "The project cupcakes are baking...";
     ovenActionButton.disabled = true;
@@ -1852,6 +1906,15 @@ function setupUiEvents() {
   batterFlavorButtons.forEach((button) => button.addEventListener("click", () => selectBatterFlavor(button.dataset.batterFlavor)));
   batterDispenser.addEventListener("click", dispenseBatter);
   ovenActionButton.addEventListener("click", useOven);
+  ovenTray.addEventListener("pointerdown", startOvenTrayDrag);
+  ovenTray.addEventListener("pointermove", moveOvenTray);
+  ovenTray.addEventListener("pointerup", finishOvenTrayDrag);
+  ovenTray.addEventListener("pointercancel", resetOvenTrayDrag);
+  ovenTray.addEventListener("keydown", (event) => {
+    if (bakingStage !== "ready" || (event.key !== "Enter" && event.key !== " ")) return;
+    event.preventDefault();
+    useOven();
+  });
   frostingFlavorButtons.forEach((button) => button.addEventListener("click", () => selectFrostingFlavor(button.dataset.frostingFlavor)));
   sprinkleToggle.addEventListener("click", toggleSprinkles);
   frostButton.addEventListener("click", frostCupcake);
