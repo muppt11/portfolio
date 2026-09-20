@@ -1487,6 +1487,7 @@ function advanceQuest() {
     return;
   }
   if (pendingStepIndex !== currentStepIndex) return;
+  if (currentStepIndex === CUPCAKE_STEPS.length - 1) playSoundEffect("whoosh", QUIET_WHOOSH_VOLUME);
   const completedStepId = CUPCAKE_STEPS[currentStepIndex]?.id;
   closeDialog(recipeDialog);
   currentStepIndex += 1;
