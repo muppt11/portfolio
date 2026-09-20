@@ -1755,6 +1755,7 @@ function skipCurrentStep() {
 
 function frostCupcake() {
   if (frostingTaps >= 3) {
+    playSoundEffect("interfaceClick");
     const completedReview = reviewMode;
     const completedStepIndex = activeDialogStepIndex;
     closeDialog(frostingDialog);
