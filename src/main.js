@@ -1922,7 +1922,11 @@ function startGame() {
 
     const setDestination = () => {
       if (gamePaused || !player) return;
-      player.destination = k.toWorld(k.mousePos());
+      const destination = k.toWorld(k.mousePos());
+      player.destination = destination;
+      if (stationEntries.some(([, position]) => destination.dist(position) < 70)) {
+        playSoundEffect("interfaceClick");
+      }
     };
 
     k.onMouseDown((button) => {
