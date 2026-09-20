@@ -201,6 +201,7 @@ const trayInteraction = document.querySelector("#tray-interaction");
 const batterFlavorButtons = document.querySelectorAll("[data-batter-flavor]");
 const batterDispenser = document.querySelector("#batter-dispenser");
 const projectTray = document.querySelector("#project-tray");
+const trayReminder = document.querySelector("#tray-reminder");
 const trayFeedback = document.querySelector("#tray-feedback");
 const bakingInteraction = document.querySelector("#baking-interaction");
 const bakingWorkspace = document.querySelector("#baking-workspace");
@@ -279,6 +280,7 @@ let collectedIngredients = new Set();
 let batterIngredientsAdded = new Set();
 let whiskMixes = 0;
 let trayCupsFilled = 0;
+let trayReminderTimer = null;
 let bakingStage = "ready";
 let ovenTrayDrag = null;
 let bakingTimer = null;
@@ -1035,6 +1037,7 @@ function openDialog(dialog, focusTarget) {
 
 function closeDialog(dialog) {
   if (dialog === recipeDialog) {
+    hideTrayReminder();
     resetOvenTrayDrag();
     if (bakingTimer) window.clearTimeout(bakingTimer);
     bakingTimer = null;
@@ -1165,12 +1168,37 @@ function whiskBatter() {
 }
 
 function openTrayInteraction() {
+  hideTrayReminder();
   trayCupsFilled = 0;
   projectTray.querySelectorAll(".tray-cup").forEach((cup) => cup.classList.remove("is-filled"));
   batterDispenser.disabled = false;
   batterDispenser.classList.remove("is-dispensing", "has-dispensed");
   trayFeedback.textContent = "4 project cups to fill.";
   updateBatterFlavorUi();
+  scheduleTrayReminder();
+}
+
+function hideTrayReminder() {
+  window.clearTimeout(trayReminderTimer);
+  trayReminderTimer = null;
+  trayReminder.hidden = true;
+}
+
+function showTrayReminder() {
+  const cupsRemaining = 4 - trayCupsFilled;
+  if (cupsRemaining <= 0) return;
+  window.clearTimeout(trayReminderTimer);
+  trayReminderTimer = null;
+  trayReminder.textContent = trayCupsFilled === 0
+    ? "Remember: click Dispense 4 times, once for each cup."
+    : `Keep clicking Dispense. ${cupsRemaining} cup${cupsRemaining === 1 ? "" : "s"} left.`;
+  trayReminder.hidden = false;
+}
+
+function scheduleTrayReminder() {
+  window.clearTimeout(trayReminderTimer);
+  if (trayCupsFilled >= 4) return;
+  trayReminderTimer = window.setTimeout(showTrayReminder, 4500);
 }
 
 function updateBatterFlavorUi() {
@@ -1197,6 +1225,7 @@ function selectBatterFlavor(flavor) {
 
 function dispenseBatter() {
   if (trayCupsFilled >= 4) return;
+  hideTrayReminder();
   playSoundEffect("dispense");
   batterDispenser.classList.add("has-dispensed");
   trayCupsFilled += 1;
@@ -1208,6 +1237,7 @@ function dispenseBatter() {
   trayFeedback.textContent = cupsRemaining ? `${cupsRemaining} project cup${cupsRemaining === 1 ? "" : "s"} to fill.` : "All four project cupcakes are ready to bake!";
   continueButton.disabled = cupsRemaining > 0;
   if (!cupsRemaining) batterDispenser.disabled = true;
+  else scheduleTrayReminder();
 }
 
 function openBakingInteraction() {
@@ -1914,6 +1944,7 @@ function setupUiEvents() {
   serveActionButton.addEventListener("click", serveOrder);
   batterFlavorButtons.forEach((button) => button.addEventListener("click", () => selectBatterFlavor(button.dataset.batterFlavor)));
   batterDispenser.addEventListener("click", dispenseBatter);
+  projectTray.addEventListener("click", showTrayReminder);
   ovenActionButton.addEventListener("click", useOven);
   ovenTray.addEventListener("pointerdown", startOvenTrayDrag);
   ovenTray.addEventListener("pointermove", moveOvenTray);

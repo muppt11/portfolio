@@ -368,7 +368,11 @@ dialog::backdrop { background: rgba(59, 37, 32, 0.58); backdrop-filter: blur(2px
 .batter-chocolate { background: #a67c68; }
 .batter-vanilla { background: #dfc892; }
 .batter-strawberry { background: #d9a0a3; }
-.tray-workspace { display: grid; grid-template-columns: 98px 1fr; gap: 13px; align-items: end; min-height: 106px; padding: 7px; border: 2px solid #d5ad82; background: #f4e6d0; }
+.tray-workspace { position: relative; display: grid; grid-template-columns: 98px 1fr; gap: 13px; align-items: end; min-height: 106px; padding: 7px; border: 2px solid #d5ad82; background: #f4e6d0; }
+.tray-reminder { position: absolute; top: 8px; left: 104px; z-index: 7; width: min(170px, calc(100% - 112px)); padding: 8px 9px; color: #3b2520; border: 2px solid #6f4436; background: #fff8e8; box-shadow: 3px 3px 0 rgba(98, 63, 54, .25); font-size: 7px; line-height: 1.45; pointer-events: none; animation: tray-reminder-pop 220ms ease-out both; }
+.tray-reminder[hidden] { display: none; }
+.tray-reminder::before { position: absolute; top: 50%; left: -18px; content: "\2190"; color: #fff8e8; font-size: 17px; font-weight: 700; filter: drop-shadow(1px 0 #6f4436) drop-shadow(-1px 0 #6f4436) drop-shadow(0 1px #6f4436) drop-shadow(0 -1px #6f4436); transform: translateY(-50%); }
+@keyframes tray-reminder-pop { from { opacity: 0; transform: translateY(5px) scale(.96); } to { opacity: 1; transform: translateY(0) scale(1); } }
 .batter-dispenser { position: relative; width: 86px; height: 93px; padding: 69px 3px 4px; color: #3b2520; border: 2px solid #6f4436; background: #fff8e8; cursor: pointer; font-size: 8px; }
 .dispenser-tank { position: absolute; top: 8px; left: 18px; width: 46px; height: 42px; border: 3px solid #6f4436; background: var(--batter-color); box-shadow: inset 0 6px rgba(255, 248, 234, .25); }
 .dispenser-nozzle { position: absolute; top: 49px; left: 37px; width: 10px; height: 17px; border: 2px solid #6f4436; border-top: 0; background: var(--batter-color); }
