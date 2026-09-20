@@ -208,11 +208,11 @@ h1 span { display: inline-block; margin-top: 5px; color: #ad4d4b; font-family: "
 .icon-button:hover, .icon-button:focus-visible, .dialog-close:hover, .dialog-close:focus-visible { color: #bd5656; border-color: #bd5656; }
 .tracker-close { width: 20px; height: 20px; font-size: 15px; line-height: 12px; }
 .assembly-close-guide[hidden] { display: none; }
-.assembly-close-guide { position: absolute; top: 36px; right: 8px; z-index: 3; width: 160px; padding: 8px; color: #3b2520; border: 2px solid #6f4436; background: #fff5dc; box-shadow: 4px 4px 0 rgba(61, 41, 41, .25); font-size: 7px; line-height: 1.4; animation: assembly-guide-jump 420ms cubic-bezier(.2, .8, .3, 1) both; transform-origin: top right; }
+.assembly-close-guide { position: absolute; top: 36px; right: 8px; z-index: 3; width: 160px; padding: 8px; color: #3b2520; border: 2px solid #6f4436; background: #fff5dc; box-shadow: 4px 4px 0 rgba(61, 41, 41, .25); font-size: 7px; line-height: 1.4; animation: assembly-guide-jump 2400ms ease-out both; transform-origin: top right; }
 .assembly-close-guide strong, .assembly-close-guide span:not(.assembly-guide-cursor) { display: block; }
 .assembly-close-guide strong { margin-bottom: 3px; color: #bd5656; font-size: 8px; }
 .assembly-guide-cursor { position: absolute; top: -23px; right: -4px; width: 18px; height: 22px; background: url("./dispenser-cursor.svg") center / contain no-repeat; pointer-events: none; animation: assembly-close-point 650ms ease-in-out infinite; }
-@keyframes assembly-guide-jump { 0% { opacity: 0; transform: translateY(14px) scale(.9); } 65% { opacity: 1; transform: translateY(-4px) scale(1.03); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
+@keyframes assembly-guide-jump { 0% { opacity: 0; transform: translateY(14px) scale(.9); } 12% { opacity: 1; transform: translateY(-5px) scale(1.04); } 24%, 52%, 80%, 100% { opacity: 1; transform: translateY(0) scale(1); } 40% { transform: translateY(-4px) scale(1.025); } 68% { transform: translateY(-3px) scale(1.015); } }
 @keyframes assembly-close-point { 50% { transform: translate(-3px, 3px); } }
 .tracker-list { display: grid; gap: 2px; margin: 8px 0; }
 .tracker-step { display: flex; width: 100%; gap: 5px; align-items: center; padding: 4px 5px; border: 0; border-left: 3px solid transparent; background: transparent; font: inherit; font-size: 9px; line-height: 1.15; text-align: left; }
