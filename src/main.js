@@ -38,7 +38,7 @@ const soundEffects = {
   gameStart: { audio: new Audio(gameStartUrl), volume: 1 },
   quickLinks: { audio: new Audio(quickLinksImpactUrl), volume: 1 },
   shine: { audio: new Audio(sprinkleShineUrl), volume: 1 },
-  sprinkles: { audio: new Audio(sprinkleShakeUrl), volume: 1, duration: 2000 },
+  sprinkles: { audio: new Audio(sprinkleShakeUrl), volume: 1, duration: 3000 },
   packageBox: { audio: new Audio(packageBoxUrl), volume: 1 },
   eating: { audio: new Audio(eatingSoundUrl), volume: 1 },
   ovenBell: { audio: new Audio(ovenBellUrl), volume: 1 },
@@ -234,6 +234,8 @@ let bakingTimer = null;
 let ovenBellTimer = null;
 let soundContext = null;
 let ovenBellBufferPromise = null;
+let sprinkleBufferPromise = null;
+let activeSprinkleSource = null;
 let packagingStage = "ready";
 let ribbonPreviewTimer = null;
 let servingStage = "ready";
@@ -342,6 +344,7 @@ function toggleBackgroundMusic() {
     stopBakingNoise();
     stopBatterMixSound();
     stopConveyorSound();
+    stopSprinkleSound();
   }
   updateSoundToggle();
 }
@@ -418,6 +421,53 @@ function playBakingNoise() {
 function stopBakingNoise() {
   bakingNoise.pause();
   bakingNoise.currentTime = 0;
+}
+
+function prepareSprinkleSound() {
+  const AudioContextClass = window.AudioContext ?? window.webkitAudioContext;
+  if (!AudioContextClass) return null;
+  if (!soundContext) soundContext = new AudioContextClass();
+  if (soundContext.state === "suspended") soundContext.resume().catch(() => {});
+  if (!sprinkleBufferPromise) {
+    sprinkleBufferPromise = fetch(sprinkleShakeUrl)
+      .then((response) => response.arrayBuffer())
+      .then((data) => soundContext.decodeAudioData(data))
+      .catch(() => null);
+  }
+  return sprinkleBufferPromise;
+}
+
+function stopSprinkleSound() {
+  if (!activeSprinkleSource) return;
+  try {
+    activeSprinkleSource.stop();
+  } catch {}
+  activeSprinkleSource = null;
+}
+
+async function playSprinkleSound() {
+  if (!musicEnabled) return;
+  const buffer = await prepareSprinkleSound();
+  if (!buffer || !soundContext) {
+    playSoundEffect("sprinkles");
+    return;
+  }
+  stopSprinkleSound();
+  const source = soundContext.createBufferSource();
+  const gain = soundContext.createGain();
+  const compressor = soundContext.createDynamicsCompressor();
+  source.buffer = buffer;
+  gain.gain.value = 1.8;
+  compressor.threshold.value = -8;
+  compressor.knee.value = 8;
+  compressor.ratio.value = 5;
+  source.connect(gain).connect(compressor).connect(soundContext.destination);
+  activeSprinkleSource = source;
+  source.addEventListener("ended", () => {
+    if (activeSprinkleSource === source) activeSprinkleSource = null;
+  });
+  source.start();
+  source.stop(soundContext.currentTime + Math.min(3, buffer.duration));
 }
 
 function prepareOvenBell() {
@@ -1246,7 +1296,7 @@ function showSprinkleShower() {
 function toggleSprinkles() {
   sprinklesEnabled = !sprinklesEnabled;
   if (sprinklesEnabled) {
-    playSoundEffect("sprinkles");
+    playSprinkleSound();
     showSprinkleShower();
   } else {
     cupcakePlaceholder.querySelectorAll(".sprinkle-shower-piece").forEach((piece) => piece.remove());
@@ -1528,6 +1578,7 @@ function showHome() {
   stopBakingNoise();
   stopBatterMixSound();
   stopConveyorSound();
+  stopSprinkleSound();
   [recipeDialog, frostingDialog, cupcakeEditorDialog, completionDialog, characterDialog].forEach((dialog) => {
     if (dialog.open) dialog.close();
   });
