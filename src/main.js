@@ -486,7 +486,7 @@ function drawBakery() {
   k.add([k.rect(8, 8), k.color(k.Color.fromHex(COLORS.pink)), k.pos(bakerySign.add(k.vec2(-91, -14))), k.anchor("center"), k.z(-11)]);
   k.add([k.rect(8, 8), k.color(k.Color.fromHex(COLORS.pink)), k.pos(bakerySign.add(k.vec2(91, 14))), k.anchor("center"), k.z(-11)]);
   createLabel(k, "TANVI'S", bakerySign.add(k.vec2(0, -12)), { size: 9, color: COLORS.red });
-  createLabel(k, "CODE BAKERY", bakerySign.add(k.vec2(0, 8)), { size: 19, color: COLORS.cocoa });
+  createLabel(k, "PORTFOLIO BAKERY", bakerySign.add(k.vec2(0, 8)), { size: 16, color: COLORS.cocoa });
   createLabel(k, "CLICK TO WALK  |  BAKE TO EXPLORE", k.vec2(GAME_WIDTH / 2, 140), { size: 10, color: COLORS.red });
 
   const stations = [

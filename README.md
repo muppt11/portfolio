@@ -1,4 +1,4 @@
-# Tanvi's Code Bakery
+# Tanvi's Portfolio Bakery
 
 An interactive portfolio built with Vite and Kaboom.js. Visitors customize a character, move through eight bakery stations, complete cupcake activities, and unlock portfolio sections along the way.
 
