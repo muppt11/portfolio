@@ -1743,8 +1743,14 @@ function setupUiEvents() {
     hideInterfaceGuides();
     openCupcakeEditor();
   });
-  soundGuideNext.addEventListener("click", showRecipeProgressGuide);
-  recipeGuideDone.addEventListener("click", showQuitGameGuide);
+  soundGuideNext.addEventListener("click", () => {
+    playSoundEffect("whoosh", QUIET_WHOOSH_VOLUME);
+    showRecipeProgressGuide();
+  });
+  recipeGuideDone.addEventListener("click", () => {
+    playSoundEffect("whoosh", QUIET_WHOOSH_VOLUME);
+    showQuitGameGuide();
+  });
   interfaceTourDone.addEventListener("click", hideInterfaceGuides);
   editCupcakeGuideDone.addEventListener("click", hideInterfaceGuides);
   cupcakeEditorDone.addEventListener("click", () => closeDialog(cupcakeEditorDialog));
