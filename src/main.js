@@ -1310,6 +1310,7 @@ function useOven() {
 
 function renderIngredients(step, { revealAll = false } = {}) {
   const nextIngredientId = revealAll ? null : step.ingredientItems.find((ingredient) => !collectedIngredients.has(ingredient.id))?.id;
+  const ingredientsRemaining = step.ingredientItems.length - collectedIngredients.size;
   ingredientGrid.innerHTML = step.ingredientItems.map((ingredient) => {
     const isCollected = revealAll || collectedIngredients.has(ingredient.id);
     return `
@@ -1321,7 +1322,7 @@ function renderIngredients(step, { revealAll = false } = {}) {
   }).join("");
   ingredientFeedback.textContent = revealAll || collectedIngredients.size === step.ingredientItems.length
     ? "All ingredients gathered. Continue when ready."
-    : `${step.ingredientItems.length - collectedIngredients.size} ingredients remain.`;
+    : `${ingredientsRemaining} ingredient${ingredientsRemaining === 1 ? "" : "s"} remain${ingredientsRemaining === 1 ? "s" : ""}.`;
 }
 
 function collectIngredient(button) {
