@@ -10,7 +10,7 @@ import dispensePopUrl from "../audio/universfield-bubble-pop-06-351337.mp3?url";
 import batterMixUrl from "../audio/freesound_community-slimy-77623.mp3?url";
 import levelUpUrl from "../audio/universfield-level-up-05-326133.mp3?url";
 import gameStartUrl from "../audio/freesound_community-086354_8-bit-arcade-video-game-start-sound-effect-gun-reload-and-jump-81124.mp3?url";
-import quickLinksImpactUrl from "../audio/universfield-cartoon-impact-02-278820.mp3?url";
+import quickLinksAwwUrl from "../audio/adhimahadi-aww-8277.mp3?url";
 import sprinkleShineUrl from "../audio/faith_mulato-shine-193240.mp3?url";
 import sprinkleShakeUrl from "../audio/freesound_community-salt-shakingwav-14556.mp3?url";
 import packageBoxUrl from "../audio/oxidvideos-placing-cardboard-box-453025.mp3?url";
@@ -37,7 +37,7 @@ const soundEffects = {
   dispense: { audio: new Audio(dispensePopUrl), volume: 1 },
   levelUp: { audio: new Audio(levelUpUrl), volume: 1 },
   gameStart: { audio: new Audio(gameStartUrl), volume: 1 },
-  quickLinks: { audio: new Audio(quickLinksImpactUrl), volume: 1 },
+  quickLinks: { audio: new Audio(quickLinksAwwUrl), volume: 1 },
   shine: { audio: new Audio(sprinkleShineUrl), volume: 1 },
   sprinkles: { audio: new Audio(sprinkleShakeUrl), volume: 1, duration: 3000 },
   packageBox: { audio: new Audio(packageBoxUrl), volume: 1 },

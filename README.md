@@ -34,7 +34,7 @@ The project structure was informed by [2d-portfolio-kaboom](https://github.com/J
 | Placement | Water Splash | Freesound Community |
 | Ingredient and option selection | Simple Whoosh | Dragon Studio |
 | Game start | 8-Bit Arcade Video Game Start Sound Effect | Freesound Community |
-| Quick Links | Cartoon Impact 02 | Universfield |
+| Quick Links | Aww | Adhimahadi |
 | Frosting and character completion | Shine | Faith Mulato |
 | Sprinkles | Salt Shaking | Freesound Community |
 | Packing | Placing Cardboard Box | Oxidvideos |
