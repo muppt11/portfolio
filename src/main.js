@@ -126,6 +126,8 @@ const cursorSprinkleLayer = document.querySelector("#cursor-sprinkle-layer");
 const gameHint = document.querySelector("#game-hint");
 const homeButton = document.querySelector("#home-button");
 const quitGameButton = document.querySelector("#quit-game-button");
+const quitGameGuide = document.querySelector("#quit-game-guide");
+const interfaceTourDone = document.querySelector("#interface-tour-done");
 const questPanel = document.querySelector("#quest-panel");
 const questCount = document.querySelector("#quest-count");
 const questStep = document.querySelector("#quest-step");
@@ -1537,9 +1539,11 @@ function hideInterfaceGuides({ resumeGame = true } = {}) {
   soundControlsGuide.hidden = true;
   recipeProgressGuide.hidden = true;
   editCupcakeGuide.hidden = true;
+  quitGameGuide.hidden = true;
   soundControls.classList.remove("is-guided");
   trackerPanel.classList.remove("is-guided");
   editCupcakeButton.classList.remove("is-guided");
+  quitGameButton.classList.remove("is-guided");
   if (resumeGame && gameStarted) gamePaused = false;
 }
 
@@ -1560,6 +1564,14 @@ function showRecipeProgressGuide() {
   trackerToggle.setAttribute("aria-expanded", "true");
   recipeProgressGuide.hidden = false;
   window.requestAnimationFrame(() => recipeGuideDone.focus());
+}
+
+function showQuitGameGuide() {
+  recipeProgressGuide.hidden = true;
+  trackerPanel.classList.remove("is-guided");
+  quitGameGuide.hidden = false;
+  quitGameButton.classList.add("is-guided");
+  window.requestAnimationFrame(() => interfaceTourDone.focus());
 }
 
 function showEditCupcakeGuide() {
@@ -1689,7 +1701,7 @@ function setupUiEvents() {
   });
   trackerClose.addEventListener("click", () => {
     hideAssemblyCloseGuide();
-    if (!recipeProgressGuide.hidden) hideInterfaceGuides();
+    if (!recipeProgressGuide.hidden) showQuitGameGuide();
     trackerPanel.classList.remove("is-open", "is-visible");
     trackerToggle.classList.add("is-visible");
     trackerToggle.setAttribute("aria-expanded", "false");
@@ -1709,7 +1721,8 @@ function setupUiEvents() {
     openCupcakeEditor();
   });
   soundGuideNext.addEventListener("click", showRecipeProgressGuide);
-  recipeGuideDone.addEventListener("click", hideInterfaceGuides);
+  recipeGuideDone.addEventListener("click", showQuitGameGuide);
+  interfaceTourDone.addEventListener("click", hideInterfaceGuides);
   editCupcakeGuideDone.addEventListener("click", hideInterfaceGuides);
   cupcakeEditorDone.addEventListener("click", () => closeDialog(cupcakeEditorDialog));
   editorDecorationOptions.addEventListener("click", (event) => {

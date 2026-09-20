@@ -128,6 +128,12 @@
           <div class="quest-progress" id="quest-progress" aria-label="Cupcake progress"></div>
           <button class="quit-game-button" id="quit-game-button" type="button">← Quit Game</button>
         </div>
+        <aside class="quit-game-guide" id="quit-game-guide" role="dialog" aria-labelledby="quit-game-guide-title" hidden>
+          <span class="quit-game-guide-arrow" aria-hidden="true">&uarr;</span>
+          <strong id="quit-game-guide-title">Leave anytime</strong>
+          <p>You can always click Quit Game to return to the home screen.</p>
+          <button id="interface-tour-done" type="button">Start Game</button>
+        </aside>
       </section>
 
       <div class="tracker-stack">
@@ -169,7 +175,7 @@
           <span class="interface-guide-arrow" aria-hidden="true">&rarr;</span>
           <strong id="recipe-progress-guide-title">Recipe Progress</strong>
           <p>This tracks every bakery step. You can close it anytime with the × button.</p>
-          <button id="recipe-guide-done" type="button">Got It</button>
+          <button id="recipe-guide-done" type="button">Next</button>
         </aside>
 
         <aside class="interface-guide edit-cupcake-guide" id="edit-cupcake-guide" role="dialog" aria-labelledby="edit-cupcake-guide-title" hidden>

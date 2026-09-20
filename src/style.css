@@ -129,7 +129,7 @@ h1 span { display: inline-block; margin-top: 5px; color: #ad4d4b; font-family: "
 .sound-controls button:hover, .sound-controls button:focus-visible { color: #3b2520; background: #f2cf83; }
 .sound-controls button:disabled { color: #9b7c70; cursor: default; }
 .sound-toggle[aria-pressed="false"] { color: #9b7c70; background: #fff8e8; }
-.sound-controls.is-guided, .tracker-panel.is-guided, .edit-cupcake-button.is-guided { animation: interface-target-pulse 700ms ease-in-out infinite alternate; }
+.sound-controls.is-guided, .tracker-panel.is-guided, .edit-cupcake-button.is-guided, .quit-game-button.is-guided { animation: interface-target-pulse 700ms ease-in-out infinite alternate; }
 @keyframes interface-target-pulse { to { box-shadow: 0 0 0 4px #f2cf83, 4px 4px 0 rgba(61, 41, 41, .35); } }
 .quick-nav-label { color: #f0c96b; text-transform: uppercase; letter-spacing: 1px; }
 .quick-nav a { color: #fff8ea; text-decoration: none; }
@@ -168,6 +168,13 @@ h1 span { display: inline-block; margin-top: 5px; color: #ad4d4b; font-family: "
 .quest-progress span.is-done { background: #9eaf87; }
 .quit-game-button { min-height: 24px; margin: 0; padding: 4px 7px; color: #fff8ea; border: 1px solid #f2d6ad; background: transparent; cursor: pointer; font: inherit; font-size: 8px; }
 .quit-game-button:hover, .quit-game-button:focus-visible { color: #3b2520; background: #f2d6ad; }
+.quit-game-guide[hidden] { display: none; }
+.quit-game-guide { position: absolute; top: calc(100% + 11px); right: 0; z-index: 8; width: 205px; padding: 10px 11px; color: #3b2520; border: 3px solid #6f4436; background: #fff8e8; box-shadow: 4px 4px 0 rgba(61, 41, 41, .28); font-size: 8px; line-height: 1.45; animation: interface-guide-jump 380ms cubic-bezier(.2, .8, .3, 1) both; }
+.quit-game-guide strong { display: block; color: #bd5656; font-size: 10px; }
+.quit-game-guide p { margin: 5px 0 8px; }
+.quit-game-guide button { padding: 5px 9px; color: #3b2520; border: 1px solid #6f4436; background: #e98f9d; cursor: pointer; font: inherit; font-size: 8px; }
+.quit-game-guide-arrow { position: absolute; top: -22px; right: 20px; color: #fff8e8; font-size: 20px; font-weight: 700; line-height: 1; filter: drop-shadow(1px 0 #6f4436) drop-shadow(-1px 0 #6f4436) drop-shadow(0 1px #6f4436) drop-shadow(0 -1px #6f4436); animation: quit-guide-point 650ms ease-in-out infinite; }
+@keyframes quit-guide-point { 50% { transform: translateY(-4px); } }
 
 .tracker-stack { position: absolute; top: 14px; right: 10px; z-index: 7; display: flex; flex-direction: column; gap: 7px; align-items: flex-end; }
 .interface-guide[hidden] { display: none; }
