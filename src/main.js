@@ -9,7 +9,6 @@ import ingredientWhooshUrl from "../audio/dragon-studio-simple-whoosh-382724.mp3
 import dispensePopUrl from "../audio/universfield-bubble-pop-06-351337.mp3?url";
 import batterMixUrl from "../audio/freesound_community-slimy-77623.mp3?url";
 import levelUpUrl from "../audio/universfield-level-up-05-326133.mp3?url";
-import gameStartUrl from "../audio/freesound_community-086354_8-bit-arcade-video-game-start-sound-effect-gun-reload-and-jump-81124.mp3?url";
 import quickLinksImpactUrl from "../audio/universfield-cartoon-impact-02-278820.mp3?url";
 import sprinkleShineUrl from "../audio/faith_mulato-shine-193240.mp3?url";
 import sprinkleShakeUrl from "../audio/freesound_community-salt-shakingwav-14556.mp3?url";
@@ -36,7 +35,6 @@ const soundEffects = {
   whoosh: { audio: new Audio(ingredientWhooshUrl), volume: 1 },
   dispense: { audio: new Audio(dispensePopUrl), volume: 1 },
   levelUp: { audio: new Audio(levelUpUrl), volume: 1 },
-  gameStart: { audio: new Audio(gameStartUrl), volume: 1 },
   quickLinks: { audio: new Audio(quickLinksImpactUrl), volume: 1 },
   shine: { audio: new Audio(sprinkleShineUrl), volume: 1 },
   sprinkles: { audio: new Audio(sprinkleShakeUrl), volume: 1 },
@@ -759,6 +757,7 @@ function updatePlayerAppearance() {
 }
 
 function openCharacterCreator() {
+  playSoundEffect("whoosh", QUIET_WHOOSH_VOLUME);
   draftCharacter = { ...characterChoice };
   renderCharacterPreview();
   characterDialog.showModal();
@@ -1774,7 +1773,7 @@ openGuideEnter.addEventListener("click", () => {
   startGame();
 });
 playGameChoice.addEventListener("click", () => {
-  playSoundEffect("gameStart");
+  playSoundEffect("whoosh", QUIET_WHOOSH_VOLUME);
   closeDialog(entryChoiceDialog);
 });
 quickLinksChoice.addEventListener("click", () => {
