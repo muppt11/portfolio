@@ -979,16 +979,18 @@ function highlightStation() {
     k.z(9),
   ]);
   activeMarker = createLabel(k, markerText, k.vec2(position.x, markerY), { size: 7, color: COLORS.red });
-  [[4, 8, 14], [12, 4, 20], [8, 4, 24], [4, 4, 28]].forEach(([width, height, offsetY]) => {
-    const node = k.add([
-      k.rect(width, height),
-      k.color(k.Color.fromHex(COLORS.red)),
-      k.pos(position.x, markerY + offsetY),
-      k.anchor("center"),
-      k.z(10),
-    ]);
-    activeMarkerArrowParts.push({ node, offsetY });
-  });
+  if (currentStepIndex === 0) {
+    [[4, 8, 14], [12, 4, 20], [8, 4, 24], [4, 4, 28]].forEach(([width, height, offsetY]) => {
+      const node = k.add([
+        k.rect(width, height),
+        k.color(k.Color.fromHex(COLORS.red)),
+        k.pos(position.x, markerY + offsetY),
+        k.anchor("center"),
+        k.z(10),
+      ]);
+      activeMarkerArrowParts.push({ node, offsetY });
+    });
+  }
   activeMarker.onUpdate(() => {
     if (gamePaused) return;
     const animatedY = markerY + Math.sin(k.time() * 4) * 4;
