@@ -44,7 +44,7 @@ const INTERFACE_CLICK_SELECTOR = [
 ].join(",");
 const HOVER_CAPABLE = window.matchMedia("(hover: hover)");
 const REDUCED_MOTION = window.matchMedia("(prefers-reduced-motion: reduce)");
-const MOBILE_LAYOUT = window.matchMedia("(max-width: 700px)");
+const MOBILE_LAYOUT = window.matchMedia("(max-width: 700px), (pointer: coarse) and (max-height: 600px)");
 const FINE_POINTER = window.matchMedia("(pointer: fine)");
 const bakingNoise = new Audio(bakingNoiseUrl);
 const batterMixSound = new Audio(batterMixUrl);

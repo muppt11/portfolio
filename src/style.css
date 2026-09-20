@@ -11,7 +11,7 @@
 
 html, body { margin: 0; min-width: 320px; min-height: 100%; }
 
-body { display: grid; min-height: 100vh; min-height: 100dvh; padding: var(--page-gutter); overflow: hidden; place-items: center; background: #f8edd8; }
+body { display: grid; min-height: 100vh; min-height: 100dvh; padding: max(var(--page-gutter), env(safe-area-inset-top)) max(var(--page-gutter), env(safe-area-inset-right)) max(var(--page-gutter), env(safe-area-inset-bottom)) max(var(--page-gutter), env(safe-area-inset-left)); overflow: hidden; place-items: center; background: #f8edd8; }
 
 button, a { font: inherit; touch-action: manipulation; }
 
@@ -594,6 +594,65 @@ dialog::backdrop { background: rgba(59, 37, 32, 0.58); backdrop-filter: blur(2px
 }
 
 button:focus-visible, a:focus-visible { outline: 3px solid #f2cf83; outline-offset: 3px; }
+
+.rotate-device { display: none; }
+
+@media (orientation: portrait) and (max-width: 700px) {
+  .rotate-device { position: fixed; inset: 0; z-index: 100000; display: grid; width: 100vw; height: 100dvh; align-content: center; justify-items: center; padding: 28px; overflow: hidden; color: #3b2520; background: #f8edd8; text-align: center; }
+  .rotate-device::before { position: absolute; inset: 14px; content: ""; border: 4px solid #6f4436; box-shadow: inset 0 0 0 6px #f1e4ce; pointer-events: none; }
+  .rotate-device strong { max-width: calc(100vw - 56px); margin-top: 18px; font-family: "Fraunces", Georgia, serif; font-size: clamp(25px, 8vw, 38px); line-height: 1.05; overflow-wrap: break-word; }
+  .rotate-device p { max-width: 290px; margin: 10px 0 0; color: #6f4436; font-size: 12px; line-height: 1.55; }
+  .rotate-phone-icon { position: relative; width: 52px; height: 82px; border: 4px solid #6f4436; background: #fff8e8; box-shadow: 6px 6px 0 #e98f9d; animation: rotate-phone 1800ms ease-in-out infinite; }
+  .rotate-phone-icon::before { position: absolute; top: 7px; right: 7px; bottom: 13px; left: 7px; content: ""; background: #f2d6ad; }
+  .rotate-phone-icon::after { position: absolute; bottom: 4px; left: 20px; width: 7px; height: 4px; content: ""; background: #6f4436; }
+  @keyframes rotate-phone { 0%, 20%, 100% { transform: rotate(0); } 55%, 85% { transform: rotate(90deg); } }
+}
+
+@media (orientation: landscape) and (max-height: 600px) {
+  :root { --page-gutter: 6px; }
+  #game-shell { width: min(960px, calc(100vw - 12px), calc(177.7778dvh - 21.3334px)); max-height: calc(100dvh - 12px); }
+  .welcome-panel { width: min(360px, calc(100% - 24px)); padding: 16px 20px 13px; border-width: 3px; box-shadow: 5px 5px 0 rgba(98, 63, 54, .2), inset 0 0 0 3px #f1e4ce; }
+  .panel-stamp { top: 10px; right: 11px; padding: 4px 6px; font-size: 8px; }
+  .eyebrow { margin-bottom: 6px; font-size: 8px; }
+  h1 { font-size: 16px; line-height: 1.05; }
+  h1 span { margin-top: 2px; font-size: 1.45em; }
+  .welcome-copy { margin: 8px 0; font-size: 9px; line-height: 1.4; }
+  .how-to-play { gap: 7px; padding: 6px 8px; font-size: 8px; line-height: 1.35; }
+  .pixel-cursor { width: 20px; height: 20px; flex-basis: 20px; font-size: 14px; }
+  .customize-button { margin-top: 6px; padding: 6px 9px; font-size: 8px; }
+  .start-button { margin-top: 7px; padding: 8px 10px; font-size: 10px; box-shadow: 3px 3px 0 #623f36; }
+  .start-button .start-arrow { font-size: 14px; }
+  .panel-note { margin-top: 7px; font-size: 7px; }
+  .quick-nav { top: 5px; gap: 7px; padding: 5px 7px; font-size: 7px; }
+  #game-shell.is-playing .quick-nav { right: 5px; bottom: 5px; }
+  .quest-card { top: 6px; left: 6px; width: 245px; padding: 8px 10px; }
+  .quest-kicker, .quest-count { font-size: 8px; }
+  .quest-card strong { font-size: 11px; }
+  .quest-card span { margin-top: 2px; font-size: 8px; line-height: 1.25; }
+  .quest-card-footer { margin-top: 6px; }
+  .quest-progress { gap: 3px; }
+  .quest-progress span { width: 13px; height: 4px; }
+  .quit-game-button { min-height: 20px; padding: 3px 5px; font-size: 7px; }
+  .quit-game-guide { width: 180px; font-size: 7px; }
+  .tracker-stack { top: 7px; right: 7px; gap: 5px; }
+  .tracker-panel { display: none; width: 160px; max-height: calc(100dvh - 55px); overflow-y: auto; }
+  .tracker-panel.is-open { display: block; }
+  .tracker-toggle { padding: 5px 7px; font-size: 7px; }
+  .edit-cupcake-button { width: 160px; padding: 5px 7px; }
+  .edit-cupcake-button strong { font-size: 8px; }
+  .sound-controls button { padding: 4px 5px; font-size: 7px; }
+  .interface-guide { right: calc(100% + 10px); width: min(175px, calc(100vw - 190px)); }
+  .game-hint { bottom: 38px; left: 7px; padding: 6px 8px; font-size: 7px; }
+  dialog { max-width: calc(100vw - 12px); max-height: calc(100dvh - 12px); }
+  .dialog-paper, .character-paper, .objective-paper, .confirm-paper { max-height: calc(100dvh - 12px); padding: 13px 15px 12px; overflow-y: auto; }
+  .dialog-paper h2, .character-paper h2, .objective-paper h2 { font-size: 20px; }
+  .dialog-kicker { margin-bottom: 5px; font-size: 7px; }
+  .dialog-content { margin: 7px 0; font-size: 8px; line-height: 1.4; }
+  .dialog-close { top: 6px; right: 6px; }
+  .interaction-instruction { margin: 5px 0; font-size: 8px; }
+  .ingredient-card { min-height: 68px; padding: 5px; }
+  .serving-scene { height: 125px; }
+}
 
 @media (max-width: 700px) {
   :root { --page-gutter: 10px; }
