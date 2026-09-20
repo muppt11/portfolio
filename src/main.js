@@ -20,7 +20,6 @@ import "./style.css";
 const STORAGE_KEY = "tanvis-code-bakery-quest";
 const CHARACTER_KEY = "tanvis-code-bakery-character";
 const CUPCAKE_KEY = "tanvis-code-bakery-cupcake";
-const MUSIC_KEY = "tanvis-code-bakery-music";
 const VOLUME_KEY = "tanvis-code-bakery-volume";
 const QUIET_WHOOSH_VOLUME = 0.8;
 const HOVER_CAPABLE = window.matchMedia("(hover: hover)");
@@ -246,7 +245,7 @@ let entryChoiceShown = false;
 let lastSprinkleTime = 0;
 let cursorSprinkleCount = 0;
 let toastTimer = null;
-let musicEnabled = localStorage.getItem(MUSIC_KEY) !== "off";
+let musicEnabled = true;
 const savedMusicVolume = localStorage.getItem(VOLUME_KEY);
 const parsedMusicVolume = Number(savedMusicVolume);
 let musicVolume = savedMusicVolume !== null && Number.isFinite(parsedMusicVolume)
@@ -329,7 +328,6 @@ function unlockBackgroundMusic() {
 
 function toggleBackgroundMusic() {
   musicEnabled = !musicEnabled;
-  localStorage.setItem(MUSIC_KEY, musicEnabled ? "on" : "off");
   if (musicEnabled) {
     playBackgroundMusic();
     if (bakingStage === "baking") playBakingNoise();
@@ -357,7 +355,6 @@ function adjustBackgroundVolume(change) {
   localStorage.setItem(VOLUME_KEY, String(musicVolume));
   if (!musicEnabled) {
     musicEnabled = true;
-    localStorage.setItem(MUSIC_KEY, "on");
     playBackgroundMusic();
     if (bakingStage === "baking") playBakingNoise();
   }
@@ -1758,6 +1755,10 @@ document.addEventListener("click", (event) => {
 });
 document.addEventListener("pointerdown", unlockBackgroundMusic, true);
 document.addEventListener("keydown", unlockBackgroundMusic, true);
+window.addEventListener("pageshow", playBackgroundMusic);
+document.addEventListener("visibilitychange", () => {
+  if (!document.hidden) playBackgroundMusic();
+});
 homeButton.addEventListener("click", () => {
   hideQuickLinksGuide({ resumeGame: false });
   showHome();
