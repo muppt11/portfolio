@@ -44,6 +44,7 @@ const INTERFACE_CLICK_SELECTOR = [
   "#edit-cupcake-guide-done",
   "#decoration-options button",
   ".bow-picker button",
+  ".frosting-picker button",
   "#cupcake-editor-dialog button",
   "#volume-down",
   "#volume-up",
@@ -1412,14 +1413,12 @@ function openCupcakeEditor() {
 
 function selectFrostingFlavor(flavor) {
   if (!FROSTING_COLORS[flavor]) return;
-  const flavorChanged = cupcakeDesign.frostingFlavor !== flavor;
   frostingFlavor = flavor;
   cupcakeDesign.frostingFlavor = flavor;
   cupcakeDesign.selections.frosting = true;
   saveCupcakeDesign();
   updateCupcakePreviews();
   updateFrostingFlavorButtons();
-  if (flavorChanged && !cupcakeEditorDialog.open) playSoundEffect("whoosh", QUIET_WHOOSH_VOLUME);
 }
 
 function showSprinkleShower() {
