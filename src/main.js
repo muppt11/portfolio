@@ -70,7 +70,7 @@ const soundEffects = {
   sprinkles: { audio: new Audio(sprinkleShakeUrl), volume: 1, duration: 500 },
   packageBox: { audio: new Audio(packageBoxUrl), volume: 1 },
   bowWrap: { audio: new Audio(bowWrapUrl), volume: 1, duration: 2500, startAt: 1.5, reuse: true },
-  eating: { audio: new Audio(eatingSoundUrl), volume: 1 },
+  eating: { audio: new Audio(eatingSoundUrl), volume: 1, startAt: 0.5, reuse: true },
   ovenBell: { audio: new Audio(ovenBellUrl), volume: 1 },
   finishQuest: { audio: new Audio(finishQuestSoundUrl), volume: 1 },
   characterOption: { audio: new Audio(characterOptionSoundUrl), volume: 1 },
