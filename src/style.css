@@ -42,7 +42,7 @@ button, a { font: inherit; touch-action: manipulation; }
   left: 50%;
   display: flex;
   height: auto;
-  width: min(400px, calc(100vw - 32px));
+  width: min(450px, calc(100vw - 18px));
   max-height: calc(100% - 32px);
   flex-direction: column;
   overflow: hidden;
@@ -693,7 +693,7 @@ button:focus-visible, a:focus-visible { outline: 3px solid #f2cf83; outline-offs
 @media (max-width: 700px) {
   :root { --page-gutter: 10px; }
   #game-shell { width: calc(100vw - 20px); height: calc(100dvh - 20px); min-height: min(460px, calc(100dvh - 20px)); }
-  .welcome-panel { padding: 24px 21px 18px; }
+  .welcome-panel { padding: 27px 26px 22px; }
   .panel-stamp { top: 13px; right: 14px; }
   .welcome-copy { margin: 15px 0; font-size: 11px; }
   .quick-nav { top: 8px; right: auto; bottom: auto; left: 50%; max-width: calc(100vw - 20px); justify-content: center; gap: 7px; padding: 7px 8px; font-size: 8px; transform: translateX(-50%); }
