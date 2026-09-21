@@ -48,7 +48,10 @@ button, a { font: inherit; touch-action: manipulation; }
   width: 100%;
   height: 100%;
   image-rendering: pixelated;
+  transition: filter 220ms ease;
 }
+
+#game-shell:not(.is-playing) #game-canvas { filter: grayscale(.82) saturate(.32) brightness(.78); }
 
 .welcome-panel {
   position: absolute;
