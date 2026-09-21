@@ -1678,6 +1678,7 @@ function hideInterfaceGuides({ resumeGame = true } = {}) {
   trackerPanel.classList.remove("is-guided");
   editCupcakeButton.classList.remove("is-guided");
   quitGameButton.classList.remove("is-guided");
+  trackerClose.classList.remove("is-close-guided");
   trackerStack.classList.remove("is-tour-active");
   questPanel.classList.remove("is-tour-active");
   interfaceTourShade.hidden = true;
@@ -1727,6 +1728,17 @@ function showEditCupcakeGuide() {
   editCupcakeGuide.hidden = false;
   editCupcakeButton.classList.add("is-guided");
   window.requestAnimationFrame(() => editCupcakeGuideDone.focus());
+}
+
+function showEditGuideCloseCue() {
+  hideInterfaceGuides({ resumeGame: false });
+  hideAssemblyCloseGuide();
+  gamePaused = true;
+  trackerPanel.classList.add("is-visible", "is-open");
+  trackerToggle.classList.remove("is-visible");
+  trackerToggle.setAttribute("aria-expanded", "true");
+  trackerClose.classList.add("is-close-guided");
+  window.requestAnimationFrame(() => trackerClose.focus());
 }
 
 function skipCurrentStep() {
@@ -1848,11 +1860,14 @@ function setupUiEvents() {
     trackerToggle.setAttribute("aria-expanded", "true");
   });
   trackerClose.addEventListener("click", () => {
+    const closeGuideFinished = trackerClose.classList.contains("is-close-guided");
+    trackerClose.classList.remove("is-close-guided");
     hideAssemblyCloseGuide();
     if (!recipeProgressGuide.hidden) showQuitGameGuide();
     trackerPanel.classList.remove("is-open", "is-visible");
     trackerToggle.classList.add("is-visible");
     trackerToggle.setAttribute("aria-expanded", "false");
+    if (closeGuideFinished) gamePaused = false;
   });
   trackerList.addEventListener("click", (event) => {
     const reviewButton = event.target.closest("button[data-review-step]");
@@ -1878,7 +1893,7 @@ function setupUiEvents() {
     playSoundEffect("whoosh", QUIET_WHOOSH_VOLUME);
     hideInterfaceGuides();
   });
-  editCupcakeGuideDone.addEventListener("click", hideInterfaceGuides);
+  editCupcakeGuideDone.addEventListener("click", showEditGuideCloseCue);
   cupcakeEditorDone.addEventListener("click", () => closeDialog(cupcakeEditorDialog));
   editorDecorationOptions.addEventListener("click", (event) => {
     const button = event.target.closest("button[data-decoration]");
