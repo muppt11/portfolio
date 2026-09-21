@@ -194,13 +194,14 @@ h1 span { display: inline-block; margin-top: 5px; color: #ad4d4b; font-family: "
 .interface-guide button { padding: 5px 9px; color: #3b2520; border: 1px solid #6f4436; background: #e98f9d; cursor: pointer; font: inherit; font-size: 8px; }
 .interface-guide-arrow { position: absolute; right: -22px; color: #fff8e8; font-size: 20px; font-weight: 700; line-height: 1; filter: drop-shadow(1px 0 #6f4436) drop-shadow(-1px 0 #6f4436) drop-shadow(0 1px #6f4436) drop-shadow(0 -1px #6f4436); animation: interface-guide-point 650ms ease-in-out infinite; }
 .sound-controls-guide { bottom: 0; }
-.sound-controls-guide .interface-guide-arrow { bottom: 5px; }
+.sound-controls-guide .interface-guide-arrow { right: -34px; bottom: 2px; width: 18px; height: 22px; background: url("./dispenser-cursor.svg") center / contain no-repeat; font-size: 0; filter: none; animation-name: sound-guide-cursor; }
 .recipe-progress-guide { top: 0; }
 .recipe-progress-guide .interface-guide-arrow { top: 12px; }
 .edit-cupcake-guide { top: 0; bottom: auto; }
 .edit-cupcake-guide .interface-guide-arrow { top: 12px; bottom: auto; }
 @keyframes interface-guide-jump { 0% { opacity: 0; transform: translateY(12px) scale(.92); } 70% { opacity: 1; transform: translateY(-3px) scale(1.02); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
 @keyframes interface-guide-point { 50% { transform: translateX(4px); } }
+@keyframes sound-guide-cursor { 50% { transform: translate(3px, -2px); } }
 .tracker-toggle { display: none; padding: 7px 9px; color: #fff8ea; border: 2px solid #fff8e8; background: #6f4436; box-shadow: 3px 3px 0 #3d2520; cursor: pointer; font-size: 9px; }
 .tracker-toggle.is-visible { display: block; }
 .edit-cupcake-area { position: relative; width: 185px; }
