@@ -27,6 +27,20 @@ button, a { font: inherit; touch-action: manipulation; }
   background: #f8edd8;
 }
 
+#game-shell::after {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  content: "";
+  background: rgba(112, 112, 112, .28);
+  -webkit-backdrop-filter: grayscale(.72) saturate(.5);
+  backdrop-filter: grayscale(.72) saturate(.5);
+  pointer-events: none;
+  transition: opacity 220ms ease, visibility 220ms;
+}
+
+#game-shell.is-playing::after { opacity: 0; visibility: hidden; }
+
 #game-canvas {
   position: absolute;
   inset: 0;
