@@ -1077,7 +1077,7 @@ function openBatterInteraction() {
   batterFeedback.textContent = "4 ingredients to add.";
   whiskButton.disabled = true;
   whiskButton.hidden = true;
-  whiskButton.classList.remove("is-mixing");
+  whiskButton.classList.remove("is-mixing", "is-stirred");
   mixingBowl.classList.remove("is-mixed");
   mixingBowl.querySelectorAll(".batter-pixel").forEach((pixel) => pixel.classList.remove("is-visible"));
   whiskTool.classList.remove("is-visible", "is-whisking");
@@ -1125,6 +1125,7 @@ function whiskBatter() {
   whiskButton.classList.add("is-mixing");
   batterFeedback.textContent = "Batter is ready!";
   whiskButton.innerHTML = "<span class=\"whisk-icon\" aria-hidden=\"true\">◡</span> Batter stirred!";
+  whiskButton.classList.add("is-stirred");
   whiskButton.disabled = true;
   updateBatterIngredientGuide();
   mixingBowl.classList.add("is-mixed");

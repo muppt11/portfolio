@@ -350,6 +350,7 @@ dialog::backdrop { background: rgba(59, 37, 32, 0.58); backdrop-filter: blur(2px
 @keyframes next-choice-arrow { 0%, 100% { transform: translateY(-2px); } 50% { transform: translateY(3px); } }
 .whisk-button:not([hidden]) { animation: whisk-pop 240ms ease-out both; }
 .whisk-button:disabled { cursor: not-allowed; opacity: .45; }
+.whisk-button.is-stirred:disabled { color: #4f603f; background: #cbd8b8; box-shadow: 4px 4px 0 #87966f; opacity: 1; }
 .whisk-button.is-mixing .whisk-icon { display: inline-block; animation: whisk-spin 300ms linear 3; }
 @keyframes whisk-spin { to { transform: rotate(360deg); } }
 @keyframes batter-bubble { from { transform: scaleX(.92); } to { transform: scaleX(1.04); } }
