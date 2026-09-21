@@ -49,6 +49,7 @@ const INTERFACE_CLICK_SELECTOR = [
   "#completion-dialog button",
   "#completion-dialog a",
   "#reset-dialog button",
+  "#quit-dialog button",
   "#volume-down",
   "#volume-up",
 ].join(",");
@@ -252,6 +253,9 @@ const exploreButton = document.querySelector("#explore-button");
 const completionReplay = document.querySelector("#completion-replay");
 const resetDialog = document.querySelector("#reset-dialog");
 const confirmReset = document.querySelector("#confirm-reset");
+const quitDialog = document.querySelector("#quit-dialog");
+const cancelQuit = document.querySelector("#cancel-quit");
+const confirmQuit = document.querySelector("#confirm-quit");
 const confettiLayer = document.querySelector("#confetti-layer");
 const completionConfettiLayer = document.querySelector("#completion-confetti-layer");
 const customizeButton = document.querySelector("#customize-button");
@@ -270,6 +274,7 @@ let activeMarker = null;
 let activeMarkerShadow = null;
 let activeMarkerPlate = null;
 let gamePaused = true;
+let gamePausedBeforeQuit = true;
 let pendingStepIndex = null;
 let frostingTaps = 0;
 let cupcakeDesign = readCupcakeDesign();
@@ -1805,7 +1810,7 @@ function showHome() {
   stopConveyorSound();
   stopSprinkleSound();
   hideInterfaceGuides({ resumeGame: false });
-  [recipeDialog, frostingDialog, cupcakeEditorDialog, completionDialog, characterDialog].forEach((dialog) => {
+  [recipeDialog, frostingDialog, cupcakeEditorDialog, completionDialog, characterDialog, quitDialog].forEach((dialog) => {
     if (dialog.open) dialog.close();
   });
   gamePaused = true;
@@ -2149,11 +2154,34 @@ homeButton.addEventListener("click", () => {
 });
 quitGameButton.addEventListener("click", () => {
   playSoundEffect("whoosh", QUIET_WHOOSH_VOLUME);
+  gamePausedBeforeQuit = gamePaused;
+  gamePaused = true;
+  quitDialog.showModal();
+  cancelQuit.focus();
+});
+function cancelQuitGame() {
+  if (quitDialog.open) quitDialog.close("cancel");
+  gamePaused = gamePausedBeforeQuit;
+}
+cancelQuit.addEventListener("click", (event) => {
+  event.preventDefault();
+  cancelQuitGame();
+});
+confirmQuit.addEventListener("click", (event) => {
+  event.preventDefault();
   saveProgress();
   saveCupcakeDesign();
   saveCharacterChoice();
+  quitDialog.close("quit");
   hideQuickLinksGuide({ resumeGame: false });
   showHome();
+});
+quitDialog.addEventListener("cancel", (event) => {
+  event.preventDefault();
+  cancelQuitGame();
+});
+quitDialog.addEventListener("click", (event) => {
+  if (event.target === quitDialog) cancelQuitGame();
 });
 objectiveHelp.addEventListener("click", () => objectiveDialog.showModal());
 openGuideButton.addEventListener("click", () => openGuideDialog.showModal());

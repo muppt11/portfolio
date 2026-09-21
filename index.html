@@ -418,6 +418,14 @@
         </form>
       </dialog>
 
+      <dialog class="confirm-dialog" id="quit-dialog" aria-labelledby="quit-title">
+        <form method="dialog" class="confirm-paper">
+          <h2 id="quit-title">Quit the game?</h2>
+          <p>Your cupcake progress will be saved so you can continue later.</p>
+          <div><button id="cancel-quit" value="cancel" type="submit">Keep Playing</button><button class="danger-button" id="confirm-quit" value="quit" type="submit">Quit Game</button></div>
+        </form>
+      </dialog>
+
       <div class="game-hint" id="game-hint" aria-live="polite">Directions: click or tap to move · Objective: explore the bakery</div>
     </main>
     <aside class="rotate-device" role="status" aria-label="Rotate your phone">
