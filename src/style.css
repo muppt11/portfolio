@@ -45,10 +45,7 @@ button, a { font: inherit; touch-action: manipulation; }
   width: min(400px, calc(100vw - 32px));
   max-height: calc(100% - 32px);
   flex-direction: column;
-  overflow-x: hidden;
-  overflow-y: auto;
-  scrollbar-color: #8f8680 transparent;
-  scrollbar-width: thin;
+  overflow: hidden;
   padding: 30px 34px 24px;
   transform: translate(-50%, -50%);
   border: 4px solid #623f36;
@@ -59,11 +56,6 @@ button, a { font: inherit; touch-action: manipulation; }
   animation: welcome-pop 480ms cubic-bezier(.2, .85, .3, 1.15);
   transition: opacity 250ms ease, transform 250ms ease, visibility 250ms;
 }
-
-.welcome-panel::-webkit-scrollbar { width: 4px; height: 0; }
-.welcome-panel::-webkit-scrollbar-track { background: transparent; }
-.welcome-panel::-webkit-scrollbar-thumb { border-radius: 2px; background: #8f8680; }
-.welcome-panel::-webkit-scrollbar-button { display: none; width: 0; height: 0; }
 
 .interface-tour-shade { position: absolute; inset: 0; z-index: 8; background: rgba(92, 92, 92, .32); pointer-events: none; animation: interface-shade-in 180ms ease-out both; }
 .interface-tour-shade[hidden] { display: none; }
