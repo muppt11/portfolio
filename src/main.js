@@ -245,6 +245,7 @@ const frostingMeterFill = document.querySelector("#frosting-meter-fill");
 const skipFrostingButton = document.querySelector("#skip-frosting-button");
 const cupcakePlaceholder = document.querySelector("#cupcake-placeholder");
 const frostingFlavorButtons = document.querySelectorAll("[data-frosting-flavor]");
+const decorationButtons = document.querySelectorAll("[data-decoration]");
 const sprinkleToggle = document.querySelector("#sprinkle-toggle");
 const completionDialog = document.querySelector("#completion-dialog");
 const exploreButton = document.querySelector("#explore-button");
@@ -273,9 +274,6 @@ let gamePaused = true;
 let pendingStepIndex = null;
 let frostingTaps = 0;
 let cupcakeDesign = readCupcakeDesign();
-let batterFlavor = cupcakeDesign.batterFlavor;
-let frostingFlavor = cupcakeDesign.frostingFlavor;
-let sprinklesEnabled = cupcakeDesign.sprinkles;
 let collectedIngredients = new Set();
 let batterIngredientsAdded = new Set();
 let whiskMixes = 0;
@@ -286,8 +284,7 @@ let ovenTrayDrag = null;
 let bakingTimer = null;
 let ovenBellTimer = null;
 let soundContext = null;
-let ovenBellBufferPromise = null;
-let sprinkleBufferPromise = null;
+const audioBufferPromises = new Map();
 let activeSprinkleSource = null;
 let packagingStage = "ready";
 let ribbonPreviewTimer = null;
@@ -439,7 +436,7 @@ function playSoundEffect(name, volumeOverride) {
   const sound = effect.reuse ? effect.audio : effect.audio.cloneNode();
   const defaultVolume = typeof effect.volume === "function" ? effect.volume() : effect.volume;
   if (effect.reuse) {
-    sound.pause();
+    resetAudio(sound);
     sound.currentTime = effect.startAt ?? 0;
   }
   sound.volume = volumeOverride ?? defaultVolume;
@@ -452,11 +449,15 @@ function playSoundEffect(name, volumeOverride) {
   }
 }
 
+function resetAudio(audio) {
+  audio.pause();
+  audio.currentTime = 0;
+}
+
 function stopBatterMixSound() {
   window.clearTimeout(batterMixSoundTimer);
   batterMixSoundTimer = null;
-  batterMixSound.pause();
-  batterMixSound.currentTime = 0;
+  resetAudio(batterMixSound);
 }
 
 function playBatterMixSound() {
@@ -468,8 +469,7 @@ function playBatterMixSound() {
 }
 
 function stopConveyorSound() {
-  conveyorSound.pause();
-  conveyorSound.currentTime = 0;
+  resetAudio(conveyorSound);
 }
 
 function playConveyorSound() {
@@ -486,22 +486,22 @@ function playBakingNoise() {
 }
 
 function stopBakingNoise() {
-  bakingNoise.pause();
-  bakingNoise.currentTime = 0;
+  resetAudio(bakingNoise);
 }
 
-function prepareSprinkleSound() {
+// Loads and caches sound buffers
+function prepareAudioBuffer(url) {
   const AudioContextClass = window.AudioContext ?? window.webkitAudioContext;
   if (!AudioContextClass) return null;
   if (!soundContext) soundContext = new AudioContextClass();
   if (soundContext.state === "suspended") soundContext.resume().catch(() => {});
-  if (!sprinkleBufferPromise) {
-    sprinkleBufferPromise = fetch(sprinkleShakeUrl)
+  if (!audioBufferPromises.has(url)) {
+    audioBufferPromises.set(url, fetch(url)
       .then((response) => response.arrayBuffer())
       .then((data) => soundContext.decodeAudioData(data))
-      .catch(() => null);
+      .catch(() => null));
   }
-  return sprinkleBufferPromise;
+  return audioBufferPromises.get(url);
 }
 
 function stopSprinkleSound() {
@@ -514,7 +514,7 @@ function stopSprinkleSound() {
 
 async function playSprinkleSound() {
   if (!musicEnabled) return;
-  const buffer = await prepareSprinkleSound();
+  const buffer = await prepareAudioBuffer(sprinkleShakeUrl);
   if (!buffer || !soundContext) {
     playSoundEffect("sprinkles");
     return;
@@ -537,23 +537,9 @@ async function playSprinkleSound() {
   source.stop(soundContext.currentTime + Math.min(3, buffer.duration));
 }
 
-function prepareOvenBell() {
-  const AudioContextClass = window.AudioContext ?? window.webkitAudioContext;
-  if (!AudioContextClass) return null;
-  if (!soundContext) soundContext = new AudioContextClass();
-  if (soundContext.state === "suspended") soundContext.resume().catch(() => {});
-  if (!ovenBellBufferPromise) {
-    ovenBellBufferPromise = fetch(ovenBellUrl)
-      .then((response) => response.arrayBuffer())
-      .then((data) => soundContext.decodeAudioData(data))
-      .catch(() => null);
-  }
-  return ovenBellBufferPromise;
-}
-
 async function playOvenBell() {
   if (!musicEnabled) return;
-  const buffer = await prepareOvenBell();
+  const buffer = await prepareAudioBuffer(ovenBellUrl);
   if (!buffer || !soundContext) {
     playSoundEffect("ovenBell");
     return;
@@ -1202,17 +1188,15 @@ function scheduleTrayReminder() {
 }
 
 function updateBatterFlavorUi() {
-  const [fill, edge] = BATTER_COLORS[batterFlavor] ?? BATTER_COLORS.strawberry;
+  const [fill, edge] = BATTER_COLORS[cupcakeDesign.batterFlavor] ?? BATTER_COLORS.strawberry;
   trayInteraction.style.setProperty("--batter-color", fill);
   trayInteraction.style.setProperty("--batter-edge", edge);
-  updateChoiceButtons(batterFlavorButtons, "batterFlavor", cupcakeDesign.selections.batter ? batterFlavor : null);
+  updateChoiceButtons(batterFlavorButtons, "batterFlavor", cupcakeDesign.selections.batter ? cupcakeDesign.batterFlavor : null);
 }
 
 function selectBatterFlavor(flavor) {
   if (!BATTER_COLORS[flavor]) return;
   const flavorChanged = cupcakeDesign.batterFlavor !== flavor;
-  batterFlavor = flavor;
-  frostingFlavor = flavor;
   cupcakeDesign.batterFlavor = flavor;
   cupcakeDesign.frostingFlavor = flavor;
   cupcakeDesign.selections.batter = true;
@@ -1247,7 +1231,7 @@ function openBakingInteraction() {
   stopBakingNoise();
   bakingTimer = null;
   bakingStage = "ready";
-  const [batterColor, batterEdge, bakedColor] = BATTER_COLORS[batterFlavor] ?? BATTER_COLORS.strawberry;
+  const [batterColor, batterEdge, bakedColor] = BATTER_COLORS[cupcakeDesign.batterFlavor] ?? BATTER_COLORS.strawberry;
   bakingInteraction.style.setProperty("--batter-color", batterColor);
   bakingInteraction.style.setProperty("--batter-edge", batterEdge);
   bakingInteraction.style.setProperty("--baked-color", bakedColor);
@@ -1308,7 +1292,7 @@ function finishOvenTrayDrag(event) {
 function useOven() {
   if (bakingStage === "ready") {
     playSoundEffect("plop");
-    prepareOvenBell();
+    prepareAudioBuffer(ovenBellUrl);
     bakingStage = "baking";
     ovenTray.setAttribute("aria-disabled", "true");
     bakingInteraction.classList.add("is-baking");
@@ -1391,13 +1375,13 @@ function openFrostingPanel({ review = false, stepIndex = currentStepIndex } = {}
 }
 
 function updateFrostingFlavorButtons() {
-  updateChoiceButtons(frostingFlavorButtons, "frostingFlavor", cupcakeDesign.selections.frosting ? frostingFlavor : null);
+  updateChoiceButtons(frostingFlavorButtons, "frostingFlavor", cupcakeDesign.selections.frosting ? cupcakeDesign.frostingFlavor : null);
 }
 
 function updateSprinkleToggle() {
-  sprinkleToggle.classList.toggle("is-selected", sprinklesEnabled);
-  sprinkleToggle.setAttribute("aria-pressed", String(sprinklesEnabled));
-  sprinkleToggle.innerHTML = `<span aria-hidden="true">&#10022;</span> ${sprinklesEnabled ? "Sprinkles added" : "Add sprinkles"}`;
+  sprinkleToggle.classList.toggle("is-selected", cupcakeDesign.sprinkles);
+  sprinkleToggle.setAttribute("aria-pressed", String(cupcakeDesign.sprinkles));
+  sprinkleToggle.innerHTML = `<span aria-hidden="true">&#10022;</span> ${cupcakeDesign.sprinkles ? "Sprinkles added" : "Add sprinkles"}`;
 }
 
 function updateCupcakePreviews() {
@@ -1440,13 +1424,12 @@ function openCupcakeEditor() {
   updateBatterFlavorUi();
   updateFrostingFlavorButtons();
   updateBowPicker();
-  updateChoiceButtons(document.querySelectorAll("[data-decoration]"), "decoration", cupcakeDesign.selections.decoration ? cupcakeDesign.decoration : null);
+  updateChoiceButtons(decorationButtons, "decoration", cupcakeDesign.selections.decoration ? cupcakeDesign.decoration : null);
   openDialog(cupcakeEditorDialog, cupcakeEditorDone);
 }
 
 function selectFrostingFlavor(flavor) {
   if (!FROSTING_COLORS[flavor]) return;
-  frostingFlavor = flavor;
   cupcakeDesign.frostingFlavor = flavor;
   cupcakeDesign.selections.frosting = true;
   saveCupcakeDesign();
@@ -1476,24 +1459,23 @@ function showSprinkleShower() {
 }
 
 function toggleSprinkles() {
-  sprinklesEnabled = !sprinklesEnabled;
-  if (sprinklesEnabled) {
+  cupcakeDesign.sprinkles = !cupcakeDesign.sprinkles;
+  if (cupcakeDesign.sprinkles) {
     playSprinkleSound();
     showSprinkleShower();
   } else {
     cupcakePlaceholder.querySelectorAll(".sprinkle-shower-piece").forEach((piece) => piece.remove());
   }
-  cupcakeDesign.sprinkles = sprinklesEnabled;
   cupcakeDesign.selections.sprinkles = true;
   saveCupcakeDesign();
   updateCupcakePreviews();
   updateSprinkleToggle();
-  if (frostingTaps >= 3) frostingFeedback.textContent = sprinklesEnabled ? "Sprinkles added! Finish when ready." : "Perfectly frosted! Finish when ready.";
+  if (frostingTaps >= 3) frostingFeedback.textContent = cupcakeDesign.sprinkles ? "Sprinkles added! Finish when ready." : "Perfectly frosted! Finish when ready.";
 }
 
 function renderDecorationInteraction() {
   updateCupcakePreviews();
-  updateChoiceButtons(document.querySelectorAll("[data-decoration]"), "decoration", cupcakeDesign.selections.decoration ? cupcakeDesign.decoration : null);
+  updateChoiceButtons(decorationButtons, "decoration", cupcakeDesign.selections.decoration ? cupcakeDesign.decoration : null);
   decorationFeedback.textContent = cupcakeDesign.decoration === "none" ? "Pick a decoration to continue." : "Your cupcake is ready for its close-up!";
 }
 
@@ -1609,7 +1591,7 @@ function serveOrder() {
   }
   if (servingStage !== "ready") return;
   playConveyorSound();
-  prepareOvenBell();
+  prepareAudioBuffer(ovenBellUrl);
   servingStage = "delivering";
   servingInteraction.classList.add("is-delivering");
   servingFeedback.textContent = "The finished project box is on its way...";
