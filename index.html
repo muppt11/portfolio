@@ -4,13 +4,54 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#f8edd8" />
-    <meta name="description" content="Tanvi's Portfolio Bakery, a cozy interactive CS portfolio." />
+    <meta name="description" content="Tanvi Muppala is a Computer Science and Mathematics student at UT Austin building agentic AI, security tooling, and full stack apps. Explore her projects, experience, and skills in an interactive bakery game." />
+    <meta name="author" content="Tanvi Muppala" />
+    <link rel="canonical" href="https://muppt11.github.io/portfolio/" />
+    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://muppt11.github.io/portfolio/" />
+    <meta property="og:title" content="Tanvi Muppala · Portfolio Bakery" />
+    <meta property="og:description" content="Tanvi Muppala is a Computer Science and Mathematics student at UT Austin building agentic AI, security tooling, and full stack apps. Explore her projects, experience, and skills in an interactive bakery game." />
+    <meta property="og:image" content="https://muppt11.github.io/portfolio/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Tanvi Muppala · Portfolio Bakery" />
+    <meta name="twitter:description" content="Tanvi Muppala is a Computer Science and Mathematics student at UT Austin building agentic AI, security tooling, and full stack apps. Explore her projects, experience, and skills in an interactive bakery game." />
+    <meta name="twitter:image" content="https://muppt11.github.io/portfolio/og-image.png" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Person",
+        "name": "Tanvi Muppala",
+        "url": "https://muppt11.github.io/portfolio/",
+        "email": "mailto:tanvim@utexas.edu",
+        "jobTitle": "Software Engineering Student",
+        "alumniOf": { "@type": "CollegeOrUniversity", "name": "The University of Texas at Austin" },
+        "knowsAbout": ["Python", "Java", "C++", "C#", "TypeScript", "React", "Next.js", "Agentic AI", "Security Threat Modeling"],
+        "sameAs": ["https://github.com/muppt11", "https://www.linkedin.com/in/tanvi-muppala"]
+      }
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Fraunces:opsz,wght@9..144,600;9..144,700&display=swap" rel="stylesheet" />
-    <title>Tanvi's Portfolio Bakery</title>
+    <title>Tanvi Muppala · Portfolio Bakery</title>
   </head>
   <body>
+    <noscript>
+      <main class="noscript-portfolio">
+        <h1>Tanvi Muppala</h1>
+        <p>Computer Science and Mathematics student at The University of Texas at Austin, graduating May 2028. Previously a Software Engineering Intern at IBM and MAG CP.</p>
+        <h2>Projects</h2>
+        <ul>
+          <li><a href="https://muppt11.github.io/ClassScheduler/">ClassScheduler</a>, a C# and Blazor app that builds UT Austin's CS semester schedule across 246 classrooms.</li>
+          <li><a href="https://muppt11.github.io/ezPark/">ezPark</a>, a Next.js marketplace for event day driveway parking.</li>
+          <li><a href="https://muppt11.github.io/magic-monopoly/">Magic Mirror Monopoly</a>, a HackTX board game with moving tokens and a narrating Magic Mirror.</li>
+          <li><a href="https://github.com/muppt11/CrossTalk">CrossTalk</a>, a tool that scores how well GitHub repos build together.</li>
+        </ul>
+        <p><a href="Tanvi_Muppala_Resume.pdf">Résumé</a> · <a href="https://github.com/muppt11">GitHub</a> · <a href="https://www.linkedin.com/in/tanvi-muppala">LinkedIn</a> · <a href="mailto:tanvim@utexas.edu">tanvim@utexas.edu</a></p>
+      </main>
+    </noscript>
     <main id="game-shell" aria-label="Tanvi's Portfolio Bakery interactive portfolio">
       <canvas id="game-canvas"></canvas>
       <audio id="background-music" autoplay loop preload="auto" playsinline></audio>
@@ -29,9 +70,9 @@
         <button class="panel-stamp" id="open-guide" type="button" aria-label="Open the bakery welcome guide">OPEN</button>
         <p class="eyebrow">A tiny interactive portfolio</p>
         <h1 id="welcome-title">Welcome to Tanvi’s<br /><span>Portfolio Bakery</span></h1>
+        <p class="welcome-identity">CS &amp; Math at UT Austin · Previously SWE Intern at IBM</p>
         <p class="welcome-copy">
-          Wander through a warm little bakery to discover Tanvi's projects, skills, a résumé,
-          GitHub, and ways to get in touch.
+          Bake a cupcake to discover my projects, skills, and experience, or jump straight there with the quick links.
         </p>
         <div class="how-to-play">
           <button class="pixel-cursor" id="objective-help" type="button" aria-label="Learn how the interactive portfolio works">+</button>
@@ -43,6 +84,8 @@
         <button class="customize-button" id="customize-button" type="button">Customize character</button>
         <button class="start-button" id="start-button" type="button">Enter the bakery <span class="start-arrow" aria-hidden="true">→</span></button>
         <p class="panel-note">Hi! I'm Tanvi and I love to bake. Take a look at my portfolio through a fun bakery game :)</p>
+        <p class="panel-shortcut">In a hurry? <a href="Tanvi_Muppala_Resume.pdf" target="_blank" rel="noreferrer">View my résumé</a> · <a href="mailto:tanvim@utexas.edu">Email me</a></p>
+        <p class="panel-footnote">Built with Kaboom.js and Vite · No tracking or cookies</p>
       </section>
 
       <dialog class="objective-dialog" id="objective-dialog" aria-labelledby="objective-title">
@@ -71,7 +114,7 @@
         <div class="objective-paper entry-choice-paper">
           <p class="dialog-kicker">CHOOSE YOUR ROUTE</p>
           <h2 id="entry-choice-title">How would you like to explore?</h2>
-          <p>Play the bakery quest, or use the navigation bar for quick access to projects, skills, résumé, GitHub, and contact.</p>
+          <p>Play the bakery quest, or use the navigation bar for quick access to projects, skills, experience, GitHub, and contact.</p>
           <div class="entry-choice-actions">
             <button class="start-button" id="play-game-choice" type="button">Play the Game</button>
             <button class="default-button" id="quick-links-choice" type="button">Use Quick Links</button>
@@ -102,7 +145,9 @@
         <button class="home-button" id="home-button" type="button">Home</button>
         <a href="#projects">Projects</a>
         <a href="#skills">Skills</a>
-        <a href="#resume">Résumé</a>
+        <a href="#experience">Experience</a>
+        <a href="#awards">Awards</a>
+        <a href="#references">References</a>
         <a href="#github">GitHub</a>
         <a href="#contact">Contact</a>
       </nav>
@@ -112,7 +157,7 @@
         <aside class="quick-links-tip" aria-labelledby="quick-links-tip-title">
           <button id="quick-links-guide-close" type="button" aria-label="Close quick links guide">×</button>
           <strong id="quick-links-tip-title">Use the Quick Links</strong>
-          <p>Jump straight to Tanvi’s projects, skills, résumé, GitHub, or contact details without completing every bakery step.</p>
+          <p>Jump straight to Tanvi’s projects, skills, experience, GitHub, or contact details without completing every bakery step.</p>
           <button class="quick-links-got-it" id="quick-links-got-it" type="button">Got It</button>
         </aside>
       </div>
@@ -252,16 +297,17 @@
             <p class="ingredient-feedback" id="ingredient-feedback" aria-live="polite">4 ingredients remain.</p>
           </div>
           <div class="batter-interaction" id="batter-interaction" hidden>
-            <p class="interaction-instruction">Click each ingredient to add it to the bowl. Then stir the batter once.</p>
+            <p class="interaction-instruction">Click each ingredient to add it to the bowl and reveal a skill. Then stir the batter once.</p>
             <div class="batter-workspace">
               <div class="batter-ingredients" id="batter-ingredients"></div>
               <div class="mixing-bowl" id="mixing-bowl" tabindex="0" aria-label="Batter bowl drop zone"><span class="bowl-fill"></span><span class="batter-pixel batter-pixel-egg"></span><span class="batter-pixel batter-pixel-butter"></span><span class="batter-pixel batter-pixel-flour"></span><span class="batter-pixel batter-pixel-sugar"></span><span class="spoon-tool" id="whisk-tool" aria-hidden="true"></span><span class="bowl-rim"></span></div>
             </div>
+            <ul class="batter-skills" id="batter-skills" aria-live="polite"></ul>
             <p class="batter-feedback" id="batter-feedback" aria-live="polite">4 ingredients to add.</p>
             <button class="whisk-button" id="whisk-button" type="button" disabled><span class="whisk-icon" aria-hidden="true">◡</span> Stir the Batter</button>
           </div>
           <div class="tray-interaction" id="tray-interaction" hidden>
-            <p class="interaction-instruction">Choose a batter flavor, then dispense batter into all four project cups.</p>
+            <p class="interaction-instruction">Choose a batter flavor, then dispense batter into all four cups. Each cup reveals a project.</p>
             <fieldset class="batter-flavor-picker">
               <legend>Pick a batter flavor</legend>
               <div>
@@ -279,6 +325,7 @@
                 <span class="tray-cup" data-tray-cup="1"></span><span class="tray-cup" data-tray-cup="2"></span><span class="tray-cup" data-tray-cup="3"></span><span class="tray-cup" data-tray-cup="4"></span>
               </div>
             </div>
+            <div class="tray-projects" id="tray-projects" aria-live="polite"></div>
             <p class="tray-feedback" id="tray-feedback" aria-live="polite">4 project cups to fill.</p>
           </div>
           <div class="baking-interaction" id="baking-interaction" hidden>
@@ -295,9 +342,10 @@
             <div class="bake-progress" aria-label="Baking progress"><span></span></div>
             <p class="baking-feedback" id="baking-feedback" aria-live="polite">Drag the filled tray into the oven or use the button.</p>
             <button class="oven-action-button" id="oven-action-button" type="button">Put Tray in Oven</button>
+            <div class="baking-experience" id="baking-experience" aria-live="polite" hidden></div>
           </div>
           <div class="decorating-interaction" id="decorating-interaction" hidden>
-            <p class="interaction-instruction">Choose one finishing touch for your saved cupcake.</p>
+            <p class="interaction-instruction" id="decoration-instruction">Each topping reveals part of my featured project.</p>
             <div class="cupcake-placeholder decorating-cupcake" id="decorating-cupcake" data-decoration="none" aria-label="Your decorated cupcake preview">
               <span class="cupcake-wrapper"></span><span class="cupcake-top"></span><span class="frosting-swirl swirl-one is-visible"></span><span class="frosting-swirl swirl-two is-visible"></span><span class="frosting-swirl swirl-three is-visible"></span><span class="cupcake-decoration" aria-hidden="true"></span>
             </div>
@@ -306,6 +354,7 @@
               <button type="button" data-decoration="candle">Candle</button>
               <button type="button" data-decoration="heart">Heart topper</button>
             </div>
+            <div class="tray-projects" id="decoration-facts" aria-live="polite"></div>
             <p class="decoration-feedback" id="decoration-feedback" aria-live="polite">Pick a decoration to continue.</p>
           </div>
           <div class="packaging-interaction" id="packaging-interaction" hidden>
@@ -334,6 +383,7 @@
                 <span class="ribbon-preview-box"><i></i></span>
               </div>
             </div>
+            <div class="tray-projects" id="packaging-reveals" aria-live="polite"></div>
             <p class="packaging-feedback" id="packaging-feedback" aria-live="polite">The cupcakes are ready to pack.</p>
             <button class="package-action-button" id="package-action-button" type="button">Pack the Cupcakes</button>
           </div>
@@ -350,11 +400,12 @@
               </div>
               <div class="conveyor-belt" aria-hidden="true"><span class="belt-surface"></span><span class="belt-leg leg-left"></span><span class="belt-leg leg-right"></span></div>
             </div>
+            <ul class="batter-skills serving-contacts" id="serving-contacts" aria-live="polite"></ul>
             <p class="serving-feedback" id="serving-feedback" aria-live="polite">The customer is waiting for their order.</p>
             <button class="serve-action-button" id="serve-action-button" type="button">Send Order Down the Belt</button>
           </div>
           <div class="technology-tags" id="technology-tags"></div>
-          <a class="dialog-link" id="recipe-link" href="#" target="_blank" rel="noreferrer">Open portfolio link</a>
+          <a class="dialog-link" id="recipe-link" href="#" target="_blank" rel="noreferrer">Open GitHub</a>
           <button class="continue-button" id="continue-button" type="button">Continue Quest <span aria-hidden="true">→</span></button>
           <div class="finish-quest-reminder" id="finish-quest-reminder" role="status" hidden>
             <button id="finish-quest-reminder-close" type="button" aria-label="Close reminder">×</button>
@@ -373,7 +424,7 @@
           <button class="dialog-close" id="frosting-close" type="button" aria-label="Close frosting interaction">×</button>
           <p class="dialog-kicker">STEP 5 · FROSTING</p>
           <h2 id="frosting-title">Tap to Frost</h2>
-          <p class="dialog-content">Three swirls unlock Tanvi’s Technologies.</p>
+          <p class="dialog-content">Each swirl reveals a layer of Tanvi’s tech stack.</p>
           <fieldset class="frosting-picker">
             <legend>Pick a frosting flavor</legend>
             <div>
@@ -387,6 +438,7 @@
             <span class="cupcake-wrapper"></span><span class="cupcake-top" id="cupcake-top"></span><span class="frosting-swirl swirl-one"></span><span class="frosting-swirl swirl-two"></span><span class="frosting-swirl swirl-three"></span>
           </div>
           <div class="frosting-meter" aria-label="Frosting progress"><span id="frosting-meter-fill"></span></div>
+          <ul class="batter-skills frosting-layers" id="frosting-layers" aria-live="polite"></ul>
           <p class="frosting-feedback" id="frosting-feedback">Ready for the first swirl?</p>
           <button class="frost-button" id="frost-button" type="button">Tap to Frost</button>
           <div class="step-navigation">
@@ -403,7 +455,7 @@
           <h2 id="completion-title">Cupcake Quest Complete!</h2>
           <p class="dialog-content">Thanks for exploring Tanvi’s Portfolio Bakery. The finished portfolio is ready to serve.</p>
           <div class="completion-actions">
-            <a href="#projects">View All Projects</a><a href="#resume">Résumé</a><a href="#github">GitHub</a><a href="#contact">Contact Me</a>
+            <a href="#projects">View All Projects</a><a href="#experience">Experience</a><a href="#github">GitHub</a><a href="#contact">Contact Me</a>
           </div>
           <button class="continue-button" id="explore-button" type="button">Explore the Bakery Again</button>
           <button class="reset-button completion-replay" id="completion-replay" type="button">Replay Quest</button>
@@ -416,6 +468,20 @@
           <p>Your saved cupcake progress will be cleared.</p>
           <div><button value="cancel" type="submit">Keep Progress</button><button class="danger-button" id="confirm-reset" value="reset" type="submit">Reset Quest</button></div>
         </form>
+      </dialog>
+
+      <dialog class="recipe-dialog quick-link-dialog" id="quick-link-dialog" aria-labelledby="quick-link-title">
+        <div class="dialog-paper">
+          <button class="dialog-close" type="button" aria-label="Close">×</button>
+          <p class="dialog-kicker" id="quick-link-kicker">TODAY'S SPECIALS</p>
+          <h2 id="quick-link-title">Projects</h2>
+          <div class="quick-link-view" id="quick-link-view" role="group" aria-label="Display style">
+            <button type="button" data-quick-view="text" aria-pressed="true">Text View</button>
+            <button type="button" data-quick-view="cupcakes" aria-pressed="false">Icon View</button>
+          </div>
+          <div class="quick-link-body" id="quick-link-body"></div>
+          <div class="completion-actions quick-link-actions" id="quick-link-actions"></div>
+        </div>
       </dialog>
 
       <dialog class="confirm-dialog" id="quit-dialog" aria-labelledby="quit-title">
@@ -432,6 +498,14 @@
       <span class="rotate-phone-icon" aria-hidden="true"></span>
       <strong>Rotate your phone</strong>
       <p>Turn your phone sideways for the full bakery experience.</p>
+      <nav class="rotate-links" aria-label="Portfolio links">
+        <a href="#projects">Projects</a>
+        <a href="#experience">Experience</a>
+        <a href="Tanvi_Muppala_Resume.pdf" target="_blank" rel="noreferrer">Résumé</a>
+        <a href="https://github.com/muppt11" target="_blank" rel="noreferrer">GitHub</a>
+        <a href="https://www.linkedin.com/in/tanvi-muppala" target="_blank" rel="noreferrer">LinkedIn</a>
+        <a href="mailto:tanvim@utexas.edu">Email</a>
+      </nav>
     </aside>
     <div class="cursor-sprinkle-layer" id="cursor-sprinkle-layer" aria-hidden="true"></div>
     <div class="custom-pixel-cursor" id="custom-pixel-cursor" aria-hidden="true"></div>

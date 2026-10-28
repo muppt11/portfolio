@@ -1,6 +1,25 @@
 # Tanvi's Portfolio Bakery
 
-An interactive portfolio built with Vite and Kaboom.js. Visitors customize a character, move through eight bakery stations, complete cupcake activities, and unlock portfolio sections along the way.
+**Live site: https://muppt11.github.io/portfolio/**
+
+An interactive portfolio built with Vite and Kaboom.js. Visitors customize a character, walk through eight bakery stations, and bake a cupcake. Each activity reveals part of my portfolio as you play: skills appear as ingredients go into the bowl, projects appear as each cup is filled, and experience comes out of the oven.
+
+Prefer to skip the game? The quick links bar opens Projects, Skills, Experience, Awards, GitHub, and Contact directly, and the home screen links straight to my résumé.
+
+## What's inside
+
+- **Projects:** ClassScheduler, ezPark, Magic Mirror Monopoly, CrossTalk, and more, with links to live demos and code
+- **Experience:** IBM, the UT Regional Security Operations Center, MAG CP, and others
+- **Skills:** languages, frameworks, databases, and tools grouped by category
+- **Contact:** email, phone, LinkedIn, and a downloadable résumé
+
+## How it's built
+
+- **Kaboom.js** renders the bakery scene, character movement, and stations on a canvas.
+- **Plain HTML, CSS, and JavaScript** power the recipe cards, mini activities, and quick link popups. There is no UI framework.
+- **Portfolio content lives in one file**, `src/constants.js`, so every station, popup, and quick link reads from the same data.
+- **Vite** builds the site, and a GitHub Actions workflow deploys it to GitHub Pages on every push to `main`.
+- Progress, cupcake choices, and sound settings are saved in `localStorage` so visitors can pick up where they left off.
 
 ## Development
 

@@ -1,5 +1,5 @@
 import { k } from "./kaboomCtx";
-import { BAKERY_STATIONS, COLORS, CUPCAKE_STEPS, GAME_HEIGHT, GAME_WIDTH } from "./constants";
+import { BAKERY_STATIONS, COLORS, CUPCAKE_STEPS, GAME_HEIGHT, GAME_WIDTH, QUICK_LINKS } from "./constants";
 import { clamp, createLabel, createPixelRect } from "./utils";
 import backgroundMusicUrl from "../audio/maksymmalko-funny-cartoon-music-532611.mp3?url";
 import plopSoundUrl from "../audio/freesound_community-water-splash-80537.mp3?url";
@@ -26,6 +26,7 @@ const STORAGE_KEY = "tanvis-code-bakery-quest";
 const CHARACTER_KEY = "tanvis-code-bakery-character";
 const CUPCAKE_KEY = "tanvis-code-bakery-cupcake";
 const VOLUME_KEY = "tanvis-code-bakery-volume";
+const QUICK_VIEW_KEY = "tanvis-code-bakery-quick-view";
 const QUIET_WHOOSH_VOLUME = 0.8;
 const INTERFACE_CLICK_SELECTOR = [
   ".dialog-close",
@@ -38,6 +39,8 @@ const INTERFACE_CLICK_SELECTOR = [
   "#objective-help",
   ".quick-nav button",
   ".quick-nav a",
+  "#quick-link-dialog button",
+  ".reveal-toggle",
   "#edit-cupcake-button",
   "#sound-guide-next",
   "#recipe-guide-done",
@@ -194,6 +197,12 @@ const ingredientGrid = document.querySelector("#ingredient-grid");
 const ingredientFeedback = document.querySelector("#ingredient-feedback");
 const batterInteraction = document.querySelector("#batter-interaction");
 const batterIngredients = document.querySelector("#batter-ingredients");
+const batterSkills = document.querySelector("#batter-skills");
+const trayProjects = document.querySelector("#tray-projects");
+const decorationFacts = document.querySelector("#decoration-facts");
+const packagingReveals = document.querySelector("#packaging-reveals");
+const servingContacts = document.querySelector("#serving-contacts");
+const bakingExperience = document.querySelector("#baking-experience");
 const mixingBowl = document.querySelector("#mixing-bowl");
 const whiskTool = document.querySelector("#whisk-tool");
 const batterFeedback = document.querySelector("#batter-feedback");
@@ -242,6 +251,7 @@ const frostingDialog = document.querySelector("#frosting-dialog");
 const previousFrostingButton = document.querySelector("#previous-frosting-button");
 const frostButton = document.querySelector("#frost-button");
 const frostingFeedback = document.querySelector("#frosting-feedback");
+const frostingLayers = document.querySelector("#frosting-layers");
 const frostingMeterFill = document.querySelector("#frosting-meter-fill");
 const skipFrostingButton = document.querySelector("#skip-frosting-button");
 const cupcakePlaceholder = document.querySelector("#cupcake-placeholder");
@@ -254,6 +264,15 @@ const completionReplay = document.querySelector("#completion-replay");
 const resetDialog = document.querySelector("#reset-dialog");
 const confirmReset = document.querySelector("#confirm-reset");
 const quitDialog = document.querySelector("#quit-dialog");
+const quickLinkDialog = document.querySelector("#quick-link-dialog");
+const quickLinkKicker = document.querySelector("#quick-link-kicker");
+const quickLinkTitle = document.querySelector("#quick-link-title");
+const quickLinkView = document.querySelector("#quick-link-view");
+const quickLinkBody = document.querySelector("#quick-link-body");
+const quickLinkActions = document.querySelector("#quick-link-actions");
+let quickLinkResumesGame = false;
+let quickLinkKey = null;
+let quickViewMode = localStorage.getItem(QUICK_VIEW_KEY) === "cupcakes" ? "cupcakes" : "text";
 const cancelQuit = document.querySelector("#cancel-quit");
 const confirmQuit = document.querySelector("#confirm-quit");
 const confettiLayer = document.querySelector("#confetti-layer");
@@ -1049,14 +1068,18 @@ function openRecipeCard(stepIndex, { review = false } = {}) {
   Object.entries(recipeInteractions).forEach(([id, interaction]) => {
     interaction.hidden = step.id !== id;
   });
-  recipeContent.hidden = Boolean(recipeInteractions[step.id]);
+  recipeContent.hidden = !step.content;
   previousStepButton.hidden = stepIndex === 0;
   skipButton.hidden = review;
   if (review && step.id === "ingredients") collectedIngredients = new Set();
   if (step.id === "batter") openBatterInteraction();
   if (step.id === "tray") openTrayInteraction();
   if (step.id === "baking") openBakingInteraction();
-  if (step.id === "decorating") renderDecorationInteraction();
+  if (step.id === "decorating") {
+    decorationFacts.innerHTML = `<p class="featured-name"><small>Featured project</small><strong>${step.featuredName}</strong></p>`;
+    renderDecorationInteraction();
+    if (cupcakeDesign.selections.decoration) showDecorationFact(cupcakeDesign.decoration);
+  }
   if (step.id === "packaging") openPackagingInteraction();
   if (step.id === "serving") openServingInteraction();
   continueButton.disabled = step.id === "ingredients" && collectedIngredients.size < step.ingredientItems.length
@@ -1072,6 +1095,7 @@ function openRecipeCard(stepIndex, { review = false } = {}) {
   if (step.id === "ingredients") renderIngredients(step);
   recipeLink.hidden = !step.link;
   if (step.link) recipeLink.href = step.link;
+  recipeLink.textContent = step.linkLabel ?? "Open link";
   openDialog(recipeDialog, continueButton);
 }
 
@@ -1080,6 +1104,7 @@ function openBatterInteraction() {
   batterIngredientsAdded = new Set();
   whiskMixes = 0;
   batterFeedback.textContent = "4 ingredients to add.";
+  batterSkills.innerHTML = "";
   whiskButton.disabled = true;
   whiskButton.hidden = true;
   whiskButton.classList.remove("is-mixing", "is-stirred");
@@ -1110,6 +1135,8 @@ function addBatterIngredient(id) {
   playSoundEffect("plop");
   ingredient?.setAttribute("aria-pressed", "true");
   mixingBowl.querySelector(`.batter-pixel-${id}`)?.classList.add("is-visible");
+  const batterItem = CUPCAKE_STEPS.find((step) => step.id === "batter").batterItems.find((item) => item.id === id);
+  if (batterItem) batterSkills.insertAdjacentHTML("beforeend", `<li><strong>${batterItem.category}</strong><span>${batterItem.skills}</span></li>`);
   batterFeedback.textContent = batterIngredientsAdded.size === 4 ? "All ingredients are in. Time to whisk!" : `${4 - batterIngredientsAdded.size} ingredients to add.`;
   whiskButton.disabled = batterIngredientsAdded.size < 4;
   whiskButton.hidden = batterIngredientsAdded.size < 4;
@@ -1145,6 +1172,7 @@ function openTrayInteraction() {
   hideTrayReminder();
   trayCupsFilled = 0;
   projectTray.querySelectorAll(".tray-cup").forEach((cup) => cup.classList.remove("is-filled"));
+  trayProjects.innerHTML = "";
   batterDispenser.disabled = false;
   batterDispenser.classList.remove("is-dispensing", "has-dispensed");
   trayFeedback.textContent = "4 project cups to fill.";
@@ -1202,6 +1230,10 @@ function dispenseBatter() {
   batterDispenser.classList.add("has-dispensed");
   trayCupsFilled += 1;
   projectTray.querySelector(`[data-tray-cup="${trayCupsFilled}"]`)?.classList.add("is-filled");
+  const trayItem = CUPCAKE_STEPS.find((step) => step.id === "tray").trayItems[trayCupsFilled - 1];
+  if (trayItem) {
+    revealCard(trayProjects, { label: `Cup ${trayCupsFilled}`, title: trayItem.name, text: trayItem.detail, links: trayItem.href ? [{ label: /ezPark|magic-monopoly/.test(trayItem.href) ? "See the project →" : trayItem.href.includes("github.io") ? "Try it →" : "View code →", href: trayItem.href }] : [] });
+  }
   batterDispenser.classList.remove("is-dispensing");
   void batterDispenser.offsetWidth;
   batterDispenser.classList.add("is-dispensing");
@@ -1210,6 +1242,37 @@ function dispenseBatter() {
   continueButton.disabled = cupsRemaining > 0;
   if (!cupsRemaining) batterDispenser.disabled = true;
   else scheduleTrayReminder();
+}
+
+function externalLink({ label, href }) {
+  return /^(mailto|tel):/.test(href) ? `<a href="${href}">${label}</a>` : `<a href="${href}" target="_blank" rel="noreferrer">${label}</a>`;
+}
+
+function revealCard(container, { label, title, text, links = [] }) {
+  container.querySelectorAll(".tray-project").forEach((card) => card.classList.add("is-collapsed"));
+  const linkMarkup = links.length ? `<span class="reveal-links">${links.map(externalLink).join("")}</span>` : "";
+  container.insertAdjacentHTML("beforeend", `<div class="tray-project" data-reveal-title="${title}"><button class="reveal-toggle" type="button"><small>${label}</small><strong>${title}</strong></button><span class="reveal-text">${text}</span>${linkMarkup}</div>`);
+}
+
+function expandRevealCard(card) {
+  card.parentElement.querySelectorAll(".tray-project").forEach((item) => item.classList.toggle("is-collapsed", item !== card));
+}
+
+recipeDialog.addEventListener("click", (event) => {
+  const card = event.target.closest(".tray-project.is-collapsed") ?? event.target.closest(".reveal-toggle")?.parentElement;
+  if (card && !event.target.closest("a")) expandRevealCard(card);
+});
+
+function stepData(id) {
+  return CUPCAKE_STEPS.find((step) => step.id === id);
+}
+
+function showDecorationFact(decoration) {
+  const fact = stepData("decorating").decorationFacts[decoration];
+  if (!fact) return;
+  const existing = decorationFacts.querySelector(`[data-reveal-title="${fact.title}"]`);
+  if (existing) expandRevealCard(existing);
+  else revealCard(decorationFacts, fact);
 }
 
 function openBakingInteraction() {
@@ -1224,6 +1287,8 @@ function openBakingInteraction() {
   bakingInteraction.style.setProperty("--batter-edge", batterEdge);
   bakingInteraction.style.setProperty("--baked-color", bakedColor);
   bakingInteraction.classList.remove("is-baking", "is-baked", "is-complete");
+  bakingExperience.hidden = true;
+  bakingExperience.innerHTML = "";
   resetOvenTrayDrag();
   ovenTray.setAttribute("aria-disabled", "false");
   bakingFeedback.textContent = "Drag the filled tray into the oven or use the button.";
@@ -1310,7 +1375,15 @@ function useOven() {
     bakingFeedback.textContent = "Four baked project cupcakes are ready!";
     ovenActionButton.disabled = true;
     ovenActionButton.textContent = "Cupcakes Removed";
+    const { intro, items } = QUICK_LINKS.experience;
+    bakingExperience.innerHTML = `<p>${intro}</p><ul>${items.map(({ name, meta, detail }) => `<li><strong>${name}</strong>${meta ? `<small class="quick-item-meta">${meta}</small>` : ""}${detail}</li>`).join("")}</ul><p class="scroll-hint">↓ Scroll the list to see every role</p>`;
+    bakingExperience.hidden = false;
+    const experienceList = bakingExperience.querySelector("ul");
+    experienceList.addEventListener("scroll", () => {
+      if (experienceList.scrollTop + experienceList.clientHeight >= experienceList.scrollHeight - 4) bakingExperience.querySelector(".scroll-hint")?.remove();
+    });
     continueButton.disabled = false;
+    window.requestAnimationFrame(() => continueButton.scrollIntoView({ block: "nearest", behavior: REDUCED_MOTION.matches ? "auto" : "smooth" }));
   }
 }
 
@@ -1348,6 +1421,7 @@ function openFrostingPanel({ review = false, stepIndex = currentStepIndex } = {}
   reviewMode = review;
   activeDialogStepIndex = stepIndex;
   frostingTaps = 0;
+  frostingLayers.innerHTML = "";
   frostingFeedback.textContent = "Ready for the first swirl?";
   frostingMeterFill.style.width = "0%";
   cupcakePlaceholder.querySelectorAll(".frosting-swirl").forEach((swirl) => swirl.classList.remove("is-visible"));
@@ -1464,7 +1538,7 @@ function toggleSprinkles() {
 function renderDecorationInteraction() {
   updateCupcakePreviews();
   updateChoiceButtons(decorationButtons, "decoration", cupcakeDesign.selections.decoration ? cupcakeDesign.decoration : null);
-  decorationFeedback.textContent = cupcakeDesign.decoration === "none" ? "Pick a decoration to continue." : "Your cupcake is ready for its close-up!";
+  decorationFeedback.textContent = cupcakeDesign.decoration === "none" ? "Pick a decoration to continue." : "Looking sweet! Try the other toppings to learn more.";
 }
 
 function selectDecoration(decoration, unlockStep = true) {
@@ -1473,6 +1547,7 @@ function selectDecoration(decoration, unlockStep = true) {
   cupcakeDesign.selections.decoration = true;
   saveCupcakeDesign();
   renderDecorationInteraction();
+  if (unlockStep) showDecorationFact(decoration);
   if (unlockStep) continueButton.disabled = false;
 }
 
@@ -1488,6 +1563,7 @@ function openPackagingInteraction() {
   ribbonPreview.classList.remove("is-visible");
   ribbonPreview.hidden = true;
   packagingFeedback.textContent = "The cupcakes are ready to pack.";
+  packagingReveals.innerHTML = "";
   packageActionButton.disabled = false;
   packageActionButton.textContent = "Pack the Cupcakes";
   updateBowPicker();
@@ -1532,6 +1608,7 @@ function packageCupcakes() {
     packagingInteraction.classList.add("is-packed");
     packagingFeedback.textContent = "The box is closed. Tie the bow to finish it.";
     packageActionButton.textContent = "Tie the Bow";
+    revealCard(packagingReveals, stepData("packaging").packagingReveals[0]);
     return;
   }
 
@@ -1544,6 +1621,7 @@ function packageCupcakes() {
     packagingFeedback.textContent = "The project box is packed and ready to deliver!";
     packageActionButton.disabled = true;
     packageActionButton.textContent = "Package Complete";
+    revealCard(packagingReveals, stepData("packaging").packagingReveals[1]);
     continueButton.disabled = false;
   }
 }
@@ -1559,6 +1637,7 @@ function openServingInteraction() {
   customerSpeech.textContent = playerName ? `Thank you, ${playerName}!` : "Thank you!";
   servingInteraction.classList.remove("is-delivering", "is-delivered");
   servingFeedback.textContent = "The customer is waiting for their order.";
+  servingContacts.innerHTML = "";
   serveActionButton.disabled = false;
   serveActionButton.removeAttribute("aria-disabled");
   serveActionButton.textContent = "Send Order Down the Belt";
@@ -1596,7 +1675,8 @@ function serveOrder() {
     const playerName = characterChoice.name.trim();
     customerSpeech.textContent = playerName ? `Ooh, yummy! Thank you, ${playerName}!` : "Ooh, yummy! Thank you!";
     window.setTimeout(() => playSoundEffect("eating"), 160);
-    servingFeedback.textContent = "Order delivered! The customer is ready to connect.";
+    servingFeedback.textContent = "Order delivered! Let's connect.";
+    servingContacts.innerHTML = stepData("serving").servingContacts.map(({ label, text, href }) => `<li><strong>${label}</strong>${externalLink({ label: text, href })}</li>`).join("");
     serveActionButton.disabled = false;
     serveActionButton.setAttribute("aria-disabled", "true");
     serveActionButton.textContent = "Order Delivered";
@@ -1735,17 +1815,6 @@ function showEditCupcakeGuide() {
   window.requestAnimationFrame(() => editCupcakeGuideDone.focus());
 }
 
-function showEditGuideCloseCue() {
-  hideInterfaceGuides({ resumeGame: false });
-  hideAssemblyCloseGuide();
-  gamePaused = true;
-  trackerPanel.classList.add("is-visible", "is-open");
-  trackerToggle.classList.remove("is-visible");
-  trackerToggle.setAttribute("aria-expanded", "true");
-  trackerClose.classList.add("is-close-guided");
-  window.requestAnimationFrame(() => trackerClose.focus());
-}
-
 function skipCurrentStep() {
   if (reviewMode || currentStepIndex >= CUPCAKE_STEPS.length) return;
   reviewMode = false;
@@ -1784,6 +1853,8 @@ function frostCupcake() {
   frostingFeedback.textContent = feedback;
   frostingMeterFill.style.width = `${frostingTaps * 33.333}%`;
   cupcakePlaceholder.querySelector(`.swirl-${["one", "two", "three"][frostingTaps - 1]}`)?.classList.add("is-visible");
+  const frostingLayer = CUPCAKE_STEPS.find((step) => step.id === "frosting").frostingLayers[frostingTaps - 1];
+  if (frostingLayer) frostingLayers.insertAdjacentHTML("beforeend", `<li><strong>${frostingLayer.label}</strong><span>${frostingLayer.tools}</span></li>`);
   if (frostingTaps === 3) {
     playSoundEffect("shine");
     frostingFeedback.textContent = "Perfectly frosted! Add sprinkles if you like.";
@@ -1898,7 +1969,7 @@ function setupUiEvents() {
     playSoundEffect("whoosh", QUIET_WHOOSH_VOLUME);
     hideInterfaceGuides();
   });
-  editCupcakeGuideDone.addEventListener("click", showEditGuideCloseCue);
+  editCupcakeGuideDone.addEventListener("click", () => hideInterfaceGuides());
   cupcakeEditorDone.addEventListener("click", () => closeDialog(cupcakeEditorDialog));
   editorDecorationOptions.addEventListener("click", (event) => {
     const button = event.target.closest("button[data-decoration]");
@@ -2215,6 +2286,76 @@ quickLinksGuide.addEventListener("click", (event) => {
 });
 quickNav.addEventListener("click", (event) => {
   if (event.target.closest("a")) hideQuickLinksGuide();
+});
+
+const CUPCAKE_FLAVORS = ["strawberry", "chocolate", "vanilla", "matcha"];
+
+function quickItemLink(href, linkLabel) {
+  if (!href) return "";
+  return externalLink({ label: linkLabel ?? `${href.includes("github.io") ? "Try it" : "View code"} →`, href }).replace("<a ", '<a class="quick-item-link" ');
+}
+
+function renderQuickLinkBody() {
+  const section = QUICK_LINKS[quickLinkKey];
+  const items = section.items ?? [];
+  quickLinkView.hidden = !items.length;
+  quickLinkView.querySelectorAll("[data-quick-view]").forEach((button) => button.setAttribute("aria-pressed", String(button.dataset.quickView === quickViewMode)));
+  const itemsMarkup = quickViewMode === "text"
+    ? `<ul>${items.map(({ name, meta, detail, href, linkLabel }) => `<li><strong>${name}</strong>${meta ? `<small class="quick-item-meta">${meta}</small>` : ""}${detail}${quickItemLink(href, linkLabel)}</li>`).join("")}</ul>`
+    : `<div class="quick-cupcakes">${items.map(({ name }, index) => `<button class="quick-cupcake" type="button" data-quick-cupcake="${index}" data-flavor="${CUPCAKE_FLAVORS[index % CUPCAKE_FLAVORS.length]}" aria-pressed="false"><span class="quick-cupcake-icon" aria-hidden="true"><i></i></span>${name}</button>`).join("")}</div><div class="quick-cupcake-detail" id="quick-cupcake-detail" aria-live="polite">Pick a cupcake to take a bite.</div>`;
+  quickLinkBody.innerHTML = `<p>${section.intro}</p>${items.length ? itemsMarkup : ""}`;
+}
+
+function openQuickLink(key) {
+  const section = QUICK_LINKS[key];
+  quickLinkKey = key;
+  quickLinkKicker.textContent = section.kicker;
+  quickLinkTitle.textContent = section.title;
+  renderQuickLinkBody();
+  const askLink = ["contact", "references"].includes(key) ? [] : [{ label: "Ask me about this", href: `mailto:tanvim@utexas.edu?subject=${encodeURIComponent(`Your ${section.title.toLowerCase()} on your portfolio`)}` }];
+  const actionLinks = [...(section.links ?? []), ...askLink];
+  quickLinkActions.innerHTML = actionLinks.map(externalLink).join("");
+  quickLinkActions.hidden = !actionLinks.length;
+  if (!quickLinkDialog.open) quickLinkResumesGame = !gamePaused;
+  gamePaused = true;
+  if (player) player.destination = null;
+  if (!quickLinkDialog.open) quickLinkDialog.showModal();
+  quickLinkBody.scrollTop = 0;
+}
+
+quickLinkView.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-quick-view]");
+  if (!button || button.dataset.quickView === quickViewMode) return;
+  quickViewMode = button.dataset.quickView;
+  localStorage.setItem(QUICK_VIEW_KEY, quickViewMode);
+  renderQuickLinkBody();
+});
+quickLinkBody.addEventListener("click", (event) => {
+  const cupcake = event.target.closest("[data-quick-cupcake]");
+  if (!cupcake) return;
+  const { name, meta, detail, href, linkLabel } = QUICK_LINKS[quickLinkKey].items[Number(cupcake.dataset.quickCupcake)];
+  quickLinkBody.querySelectorAll("[data-quick-cupcake]").forEach((button) => {
+    button.classList.toggle("is-selected", button === cupcake);
+    button.setAttribute("aria-pressed", String(button === cupcake));
+  });
+  const detailBox = quickLinkBody.querySelector("#quick-cupcake-detail");
+  detailBox.innerHTML = `<strong>${name}</strong>${meta ? `<small class="quick-item-meta">${meta}</small>` : ""}${detail}${quickItemLink(href, linkLabel)}`;
+  detailBox.classList.add("is-filled");
+});
+
+document.addEventListener("click", (event) => {
+  const link = event.target.closest?.('a[href^="#"]');
+  const key = link?.getAttribute("href").slice(1);
+  if (!QUICK_LINKS[key]) return;
+  event.preventDefault();
+  openQuickLink(key);
+});
+quickLinkDialog.addEventListener("close", () => {
+  if (quickLinkResumesGame) gamePaused = false;
+  quickLinkResumesGame = false;
+});
+quickLinkDialog.addEventListener("click", (event) => {
+  if (event.target === quickLinkDialog) quickLinkDialog.close();
 });
 
 document.addEventListener("click", (event) => {
