@@ -2312,10 +2312,8 @@ function openQuickLink(key) {
   quickLinkKicker.textContent = section.kicker;
   quickLinkTitle.textContent = section.title;
   renderQuickLinkBody();
-  const askLink = ["contact", "references"].includes(key) ? [] : [{ label: "Ask me about this", href: `mailto:tanvim@utexas.edu?subject=${encodeURIComponent(`Your ${section.title.toLowerCase()} on your portfolio`)}` }];
-  const actionLinks = [...(section.links ?? []), ...askLink];
-  quickLinkActions.innerHTML = actionLinks.map(externalLink).join("");
-  quickLinkActions.hidden = !actionLinks.length;
+  quickLinkActions.innerHTML = (section.links ?? []).map(externalLink).join("");
+  quickLinkActions.hidden = !section.links;
   if (!quickLinkDialog.open) quickLinkResumesGame = !gamePaused;
   gamePaused = true;
   if (player) player.destination = null;
